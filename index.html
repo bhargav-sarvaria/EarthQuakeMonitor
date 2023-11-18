@@ -12,11 +12,7 @@
     <link rel="stylesheet" href="./css/chart4.css">
     <link rel="stylesheet" href="./css/chart5.css">
     <link rel="stylesheet" href="./css/main.css">
-    <script src="./js/chart1.js"></script>
-    <script src="./js/chart2.js"></script>
-    <script src="./js/chart3.js"></script>
-    <script src="./js/chart4.js"></script>
-    <script src="./js/chart5.js"></script>
+    
 
 </head>
 
@@ -24,16 +20,19 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 title">Title</div>
+            <svg id="time-range-selector" width="600" height="100"></svg>
+
         </div>
         <div class="row" id="main-container">
             <div class="col-md-4">
-                <div class="chart" id="chart-1">Chart 1 Placeholder</div>
+                <div class="chart" id="chart-1"></div>
                 <div class="chart" id="chart-2">Chart 2 Placeholder</div>
             </div>
             <div class="col-md-4">
-                <div id="slider-container">
+                <!-- <div id="slider-container">
                     <input type="range" class="form-control-range" id="customRange" min="0" max="100">
-                </div>
+                </div> -->
+                <div id="timeline-container"></div>
                 <div id="chart-3-container">
                     <div class="chart w-100" id="chart-3">Chart 3 Placeholder</div>
                 </div>
@@ -49,7 +48,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.js"></script>
+    <!-- <script>
         // JavaScript and D3 code will go here
         // Example: Initialize slider
         const slider = document.getElementById('customRange');
@@ -57,7 +57,14 @@
             // Implement the logic to update charts based on the slider's value
             console.log(`Slider value: ${slider.value}`);
         });
-    </script>
+    </script> -->
+
+
+    <script src="./js/chart1.js"></script>
+    <!-- <script src="./js/chart2.js"></script>
+    <script src="./js/chart3.js"></script>
+    <script src="./js/chart4.js"></script>
+    <script src="./js/chart5.js"></script> -->
 </body>
 
 </html>
