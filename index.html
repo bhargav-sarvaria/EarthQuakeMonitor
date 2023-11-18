@@ -17,13 +17,16 @@
     <script src="./js/chart3.js"></script>
     <script src="./js/chart4.js"></script>
     <script src="./js/chart5.js"></script>
-
+    <script src="./js/dateSlider.js"></script>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 title">Title</div>
+        </div>
+        <div class="row">
+            <div class="col-12 p-0" id="dateSliderWrapper"></div>
         </div>
         <div class="row" id="main-container">
             <div class="col-md-4">
@@ -39,10 +42,19 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="chart" id="chart-4">Chart 4 Placeholder</div>
+                <div class="chart" id="chart-4"></div>
                 <div class="chart" id="chart-5">Chart 5 Placeholder</div>
             </div>
         </div>
+    </div>
+    <div id="tooltip" style="visibility: hidden; color: black;">
+        <div class="row justify-content-center">
+            <div style="max-width: min-content;">
+                <span style="white-space: nowrap;">Resource:</span>
+                <span id="tooltip-name" style="font-weight: bold; white-space: nowrap; margin-left: 0.5em;"></span>
+            </div>
+        </div>
+        <p id="tooltip-value" style="white-space: nowrap;"></p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -50,12 +62,27 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script>
-        // JavaScript and D3 code will go here
+        // Global variables shared across all charts go here
         // Example: Initialize slider
-        const slider = document.getElementById('customRange');
-        slider.addEventListener('input', function () {
-            // Implement the logic to update charts based on the slider's value
+
+        const slider = createDoubleSlider();
+        slider.addEventListener('change', function () {
+            // Each chart subscribes to 'change' event on `slider`
+            // after 'DOMContentLoaded' event, see chart4.js
             console.log(`Slider value: ${slider.value}`);
+        });
+
+        /**
+         * Fired when user hovers over a resource glyph (chart 4 bar segments)
+         * types: resource-hover | resource-leave
+         * detail: {
+         *  resource: the resource name (eg. MEDICAL, EARTHQUAKE, etc.)
+         * }
+        */
+        const resourceEvent = (type, resource) => new CustomEvent(`resource-${type}`, {
+            cancelable: false,
+            bubbles: true,
+            detail: { resource }
         });
     </script>
 </body>
