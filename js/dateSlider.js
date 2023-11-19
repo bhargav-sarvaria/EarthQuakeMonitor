@@ -140,7 +140,7 @@ const createDoubleSlider = () => {
         .attr("y", y)
         .attr("x", marginLeft)
         .attr("width", width - (marginRight + marginLeft))
-        .attr("height", 10)
+        .attr("height", 5)
         .attr("fill", "black");
 
     const minDateInput = svg.append("circle")
@@ -159,29 +159,14 @@ const createDoubleSlider = () => {
 
     svg.node().value = [...extent];
 
-    minDateInput.on('change', function(d) {
-        const e = d3.event;
-        const extent = svg.node().value
-        extent[0] = x.invert(e.target.value);
-        if(extent[0] > extent[1]){
-            [extent[1], extent[0]] = [extent[0], extent[1]]
-        }
-    });
-
-    maxDateInput.on('change', function(d) {
-        const e = d3.event;
-        const extent = svg.node().value
-        extent[1] = x.invert(e.target.value);
-        if(extent[1] < extent[0]){
-            [extent[1], extent[0]] = [extent[0], extent[1]]
-        }
-    });
-
     svg.on("change", function(d) {
         const e = d3.event;
-        const extent = svg.node().value;
-        minLabel.text(`Min: ${extent[0]}`);
-        maxLabel.text(`Max: ${extent[1]}`);
+        this.value = [minDateInput, maxDateInput]
+            .map((selection, i) => selection.node().value ?
+                 x.invert(selection.node().value) : this.value[i])
+            .sort((a, b) => a < b ? -1 : 1);
+        minLabel.text(`Min: ${this.value[0]}`);
+        maxLabel.text(`Max: ${this.value[1]}`);
     });
 
     return svg.node();

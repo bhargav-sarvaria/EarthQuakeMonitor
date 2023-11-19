@@ -208,6 +208,9 @@ const createStackedBarChart = (data) => {
                     });
                 return rect;
             })
+            .transition()
+            .duration(500)
+            .ease(d3.easeQuad)
             .attr("y", d => y(d[1].data[0]))
             .attr("x", d => x(d[1][0]))
             .attr("width", d => x(d[1][1]) - x(d[1][0]))
