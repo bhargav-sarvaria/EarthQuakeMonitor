@@ -54,7 +54,9 @@ const makeDraggable = (svg, {xAxis, yAxis} = {}) => {
             evt.preventDefault();
             const coord = getMousePosition(evt);
             let diffX = (coord.x - offset.x), y = coord.y -  offset.y;
-            const oldValue = selectedElement.cx.baseVal.value;
+            const boundingBox = selectedElement.getBBox();
+            const centerX = boundingBox.x + (boundingBox.width / 2);
+            const oldValue = centerX;
             const newValue = oldValue + diffX;
             if(xAxis){
                 if(newValue < xAxis.min){
@@ -104,7 +106,7 @@ const createDoubleSlider = () => {
         .attr("width", width)
         .attr("height", height);
 
-    const extent = [new Date('04/06/2020'), new Date('04/11/2020')];
+    const extent = [new Date('04/06/2020'), new Date('04/10/2020 12:00:00 PM')];
     const x = d3.scaleTime()
         .domain(extent)
         .range([marginLeft, width - marginRight]);
@@ -116,6 +118,7 @@ const createDoubleSlider = () => {
         }
     });
 
+    const formatDate = date => date.toLocaleString();
     const y = height / 2;
 
     const label = svg.append("g")
@@ -123,17 +126,21 @@ const createDoubleSlider = () => {
     const minLabel = label.append("text")
         .attr("text-anchor", "middle")
         .attr("x", "50%")
-        .text(`Min: ${extent[0]}`);
+        .text(`Min: ${formatDate(extent[0])}`);
     
     const maxLabel = label.append("text")
         .attr("text-anchor", "middle")
         .attr("x", "50%")
         .attr("transform", `translate(0, 20)`)
-        .text(`Max: ${extent[1]}`);
+        .text(`Max: ${formatDate(extent[1])}`);
+
+    const xAxis = {
+        y: height - marginBottom
+    }
 
     // Add the x-axis.
     svg.append("g")
-        .attr("transform", `translate(0,${height - marginBottom})`)
+        .attr("transform", `translate(0,${xAxis.y})`)
         .call(d3.axisBottom(x));
 
     svg.append("rect")
@@ -143,19 +150,43 @@ const createDoubleSlider = () => {
         .attr("height", 5)
         .attr("fill", "black");
 
-    const minDateInput = svg.append("circle")
-        .attr("class", "draggable")
-        .attr("r", 20)
-        .attr("cx", marginLeft)
-        .attr("cy", y)
-        .attr("fill", "red");
+    const circleDim = {
+        r: 20
+    }
 
-    const maxDateInput = svg.append("circle")
-        .attr("class", "draggable")
-        .attr("r", 20)
-        .attr("cx", width - (marginRight))
-        .attr("cy", y)
-        .attr("fill", "red");
+    const rectDim = {
+        width: 2,
+        height: xAxis.y - y,
+    }
+
+    const range = svg.append("g")
+    // .style("outline", "solid 3px green");
+    
+    const addSliderButton = (selection, {centerX}) => {
+        const sliderButton = selection.append("g")
+            .attr("class", "draggable");
+        sliderButton.append("circle")
+            .attr("r", circleDim.r)
+            .attr("cx", centerX)
+            .attr("cy", y)
+            .attr("fill", "black");
+        
+        sliderButton.append("rect")
+            .attr("x", (centerX - (rectDim.width / 2)))
+            .attr("y", y)
+            .attr("width", rectDim.width)
+            .attr("height", rectDim.height)
+            .attr("fill", "red");
+        sliderButton.append("circle")
+            .attr("r", circleDim.r / 4)
+            .attr("cx", centerX)
+            .attr("cy", y)
+            .attr("fill", "red");
+        return sliderButton;
+    }
+
+    const minDateInput = addSliderButton(range, {centerX: marginLeft});
+    const maxDateInput = addSliderButton(range, {centerX: width - marginRight});
 
     svg.node().value = [...extent];
 
@@ -165,8 +196,8 @@ const createDoubleSlider = () => {
             .map((selection, i) => selection.node().value ?
                  x.invert(selection.node().value) : this.value[i])
             .sort((a, b) => a < b ? -1 : 1);
-        minLabel.text(`Min: ${this.value[0]}`);
-        maxLabel.text(`Max: ${this.value[1]}`);
+        minLabel.text(`Min: ${formatDate(this.value[0])}`);
+        maxLabel.text(`Max: ${formatDate(this.value[1])}`);
     });
 
     return svg.node();
