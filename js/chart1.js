@@ -23,7 +23,8 @@ const stopWords = new Set([
     "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', 
     "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 
     'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', 
-    "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"
+    "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't",
+    'anyone', 'someone', 'anything', 'something', 'anywhere', 'somewhere'
 ]);
 
 
@@ -37,63 +38,31 @@ function filterMessagesByTime(startTime, endTime) {
 }
 
 function calculateWordFrequencies(messages) {
+    let dataStr = "";
+
     const wordCounts = {};
     messages.forEach(message => {
-        const words = message.message.split(/\s+/);
-        words.forEach(word => {
-            word = word.toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (word && !stopWords.has(word)) {
-                wordCounts[word] = (wordCounts[word] || 0) + 1;
-            }
-        });
+        // const words = message.message.split(/\s+/);
+        // words.forEach(word => {
+        //     word = word.toLowerCase().replace(/[^a-z0-9]/g, "");
+        //     if (word && !stopWords.has(word)) {
+        //         wordCounts[word] = (wordCounts[word] || 0) + 1;
+        //     }
+        // });
+
+        dataStr = dataStr +" " +message.essential_words;
+
     });
-    return wordCounts;
+    // return wordCounts;
+    return dataStr;
 }
 
-function combineWordFrequencies(messages) {
-    const combinedWordCounts = {};
-    
-    messages.forEach(message => {
-        const wordFreq = message.wordFreq; // Assume each message has precalculated 'wordFreq'
-        for (const [word, count] of Object.entries(wordFreq)) {
-            if (!combinedWordCounts[word]) {
-                combinedWordCounts[word] = count;
-            } else {
-                combinedWordCounts[word] += count;
-            }
-        }
-    });
-
-    return combinedWordCounts;
-}
-
-
-function preprocessDataset(data) {
-    data.forEach(entry => {
-      const wordCounts = {};
-      const words = entry.message.split(/\s+/);
-      words.forEach(word => {
-        word = word.toLowerCase().replace(/[^a-z0-9]/g, "");
-        if (word && !stopWords.has(word)) {
-          wordCounts[word] = (wordCounts[word] || 0) + 1;
-        }
-      });
-      // Store the word counts with the message
-      entry.wordFreq = wordCounts;
-    });
-  }
-
-
-function createWordCloud(wordFrequencies) {
-    const words = Object.keys(wordFrequencies).map(word => {
-        return { text: word, size: wordFrequencies[word] };
-    });
-
+function createWordCloud(messages) {
+   
     const chartDiv = document.getElementById('chart-1');
     const width = chartDiv.clientWidth;  // Get the width of the div
     const height = chartDiv.clientHeight; // Get the height of the div
 
-    // Select the existing SVG if it exists, or create one otherwise
     let svg = d3.select('#chart-1').select('svg');
     if (svg.empty()) {
         svg = d3.select('#chart-1').append('svg');
@@ -103,106 +72,84 @@ function createWordCloud(wordFrequencies) {
            .attr('transform', `translate(${width / 2}, ${height / 2})`);
     }
 
-    // Update the word cloud layout
-    const layout = d3.layout.cloud()
-                     .size([width, height])
-                     .words(words)
-                     .padding(5)
-                     .rotate(() => ~~(Math.random() * 2) * 90)
-                     .fontSize(d => d.size * 10) // Scale font size
-                     .on('end', draw);
+    function updateWordCloud(){
+        svg.selectAll("*").remove();
+        allData = messages.map(d => {
+            d.parsedTime = new Date(d.time);
+            return d;
+        });
+        const [startTime, endTime] = slider.value;
+        messages_filtered = allData.filter(d => {
+            const messageTime = new Date(d.time);
+            return messageTime >= startTime && messageTime <= endTime;
+        });
 
-    layout.start();
+        let wordFrequencies = "";
+        messages_filtered.forEach(message => {
+            wordFrequencies = wordFrequencies +" " +message.essential_words;
 
-    function draw(words) {
-        // Bind the words data to your text elements
-        const text = svg.select('g').selectAll('text')
-                        .data(words, d => d.text);
+        });   
+        words = wordFrequencies
+                .trim()
+                .split(/[\s.]+/g)
+        
+        words = words.filter(word => {
+            if (word && !stopWords.has(word)) {
+                return word;
+            }
+        })
 
-        // Enter new words
-        text.enter().append('text')
-            .style('font-size', d => d.size + 'px')
-            .attr('text-anchor', 'middle')
-            .attr('transform', d => `translate(${[d.x, d.y]})rotate(${d.rotate})`)
-            .text(d => d.text);
-
-        // Update existing words
-        text.transition().duration(600)
-            .style('font-size', d => d.size + 'px')
-            .attr('transform', d => `translate(${[d.x, d.y]})rotate(${d.rotate})`)
-            .text(d => d.text);
-
-        // Exit old words
-        text.exit().remove();
-    }
-}
-
-
-
-
-function createTimeline(data) {
-    // ... time scale setup ...
-
+        var nest = d3.nest()
+            .key(function(d) { return d; })
+            .rollup(function(group) { return group.length; })
+            .entries(words);
     
+        nest.sort(function(a, b) {
+            return d3.descending(a.value, b.value);
+        });
+    
+        var slicedNest = nest.slice(0, 250);
+        var mappedData = slicedNest.map(function(entry) {
+            return { text: entry.key, size: entry.value };
+        });
+    
+        mappedData.sort((a, b) => b.size - a.size);
+        var layout = d3.layout.cloud()
+                        .size([width, height])
+                        .words(mappedData.map(function(d) { return {text: d.text, size:d.size}; }))
+                        .padding(5)        //space between words
+                        .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                        .fontSize(function(d) { return d.size/30; })      // font size of words
+                        .on("end", draw);
+        layout.start();
+  
+        function draw(words) {
+            svg
+            .append("g")
+                .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function(d) { return d.size; })
+                .style("fill", "#69b3a2")
+                .attr("text-anchor", "middle")
+                .style("font-family", "Impact")
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.text; });
+        }
+    
+    }
 
-
-    const svg = d3.select("#time-range-selector");
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-    const width = +svg.attr("width") - margin.left - margin.right;
-    const height = +svg.attr("height") - margin.top - margin.bottom;
-
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-
-    const timeExtent = d3.extent(data, d => d.parsedTime);
-    const xScale = d3.scaleTime()
-                     .domain(timeExtent)
-                     .range([0, width]); // 'width' is the width of your SVG container
-
-    // Brush
-    const brush = d3.brushX()
-    .extent([[0, 0], [width, height]])
-    .on("end", function() {
-        if (!d3.event.selection) return; // Make sure d3.event is correctly used
-        const [selectedStartTime, selectedEndTime] = d3.event.selection.map(xScale.invert);
-       
-        console.log(selectedStartTime);
-        console.log(selectedEndTime);
-        // Example usage when time period is selected
-        const filteredData = getFilteredData(selectedStartTime, selectedEndTime);
-        // console.log(filteredData)
-        const wordFrequencies = calculateWordFrequencies(filteredData);
-        // console.log(wordFrequencies)
-        createWordCloud(wordFrequencies);
-    });
-
-
-    g.append("g").call(d3.axisBottom(xScale));
-    g.append("g").attr("class", "brush").call(brush);
-
+    updateWordCloud();
+    return updateWordCloud;
 }
 
 
-
-
-
-
-// Load CSV file
-d3.csv('YInt.csv').then(data => {
-    allData = data.map(d => {
-        // console.log(d.time)
-        d.parsedTime = new Date(d.time); // Assuming 'time' is the datetime field
-        return d;
-    });
-
-    preprocessDataset(allData);
-
-    // createTimeline(allData)
-   
-    // Example usage when time period is selected
-    const filteredData = getFilteredData(new Date("4/6/2020 12:12:00 AM"), new Date("4/6/2020 12:16:00 AM"));
-    console.log(filteredData)
-    const wordFrequencies = calculateWordFrequencies(filteredData);
-    console.log(wordFrequencies)
-    createWordCloud(wordFrequencies);
-
+window.addEventListener('DOMContentLoaded', async () => {
+    d3.csv('words_essential.csv').then(data => {
+        const updateWordCloud = createWordCloud(data);
+        slider.addEventListener('change', updateWordCloud);
+    });    
 });
