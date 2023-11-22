@@ -23,6 +23,24 @@ const stopWords = new Set([
 ]);
 
 
+const disaster_keywords = new Set([
+    'help', 'trapped', 'stuck', 'emergency', 'urgent', 'assistance',
+    'aid', 'SOS', 'danger', 'unsafe', 'evacuate', 'evacuation',
+    'shelter', 'injury', 'injured', 'hurt', 'medical', 'collapse',
+    'collapsed', 'destruction', 'debris', 'rubble', 'seismic',
+    'tremor', 'aftershock', 'quake', 'earthquake', 'shaking', 'damage',
+    'damaged', 'destroy', 'destroyed', 'crisis', 'disaster', 'rescue',
+    'missing', 'survival', 'survive', 'victim', 'casualties', 'fatality',
+    'fatalities', 'alert', 'warning', 'impact', 'quivering','trembling','wobbling','rumble',
+    'shuddering','vibrating','evacuating','holes','meds','food', 'rubble','hotspots','volunteers','red tag','not safe',
+    'fuel','flash lights','batteries','stocked up','camp','road','outage','shortages','escape','apocalypse','lives','aftershock','freindatalities',
+    'trapped','shower','restore','park','patients','brick','blood','died','shuddering'
+    ])
+
+const irrelavant_words = ['parking spot','parked','parking']
+
+const wordPattern = new RegExp(irrelavant_words.join("|"), "i");
+
 let allData = [];
 
 function createWordCloud(messages) {
@@ -43,6 +61,12 @@ function createWordCloud(messages) {
     const tooltip = d3.select('#chart-1').append('div')
         .attr('class', 'tooltip')
         .style('opacity', 0);
+
+    messages = messages.filter(d => {
+        if(!wordPattern.test(d.essential_words)){
+            return d
+        }
+    });
 
     function updateWordCloud(){
         svg.selectAll("*").remove();
@@ -80,7 +104,7 @@ function createWordCloud(messages) {
             return d3.descending(a.value, b.value);
         });
     
-        var slicedNest = nest.slice(0, 400);
+        var slicedNest = nest.slice(0, 200);
         var mappedData = slicedNest.map(function(entry) {
             return { text: entry.key, size: entry.value };
         });
@@ -88,10 +112,10 @@ function createWordCloud(messages) {
         mappedData.sort((a, b) => b.size - a.size);
         var layout = d3.layout.cloud()
                         .size([width, height])
-                        .words(mappedData.map(function(d) { return {text: d.text, size:d.size}; }))
+                        .words(mappedData.map(function(d) { return {text: d.text, size: disaster_keywords.has(d.text) && !irrelavant_words.includes(d.text)? d.size :d.size/10}; }))
                         .padding(5)  
                         .rotate(function() { return ~~(Math.random() * 2) * 90; })
-                        .fontSize(function(d) { return d.size/15; })  
+                        .fontSize(function(d) { return d.size; })  
                         .on("end", draw);
         layout.start();
   

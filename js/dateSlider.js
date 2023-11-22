@@ -96,6 +96,14 @@ const createDoubleSlider = () => {
     const svg = wrapper.append("svg")
         .attr("id", "dateSlider");
     
+
+    const highlightedDate = new Date('04/06/2020 01:00:00 PM')
+    
+    // Calculate dates for 5-hour and 30-hour windows after the highlighted date
+    const fiveHoursAfter = new Date(highlightedDate.getTime() + 5 * 60 * 60 * 1000);
+    const thirtyHoursAfter = new Date(highlightedDate.getTime() + 30 * 60 * 60 * 1000);
+
+
     const marginTop = 20;
     const marginRight = 50;
     const marginBottom = 40;
@@ -199,6 +207,65 @@ const createDoubleSlider = () => {
         minLabel.text(`Min: ${formatDate(this.value[0])}`);
         maxLabel.text(`Max: ${formatDate(this.value[1])}`);
     });
+
+    // Add a line to represent the highlighted date
+    const highlightedLine = svg.append("line")
+        .attr("x1", x(highlightedDate))
+        .attr("x2", x(highlightedDate))
+        .attr("y1", y - 10) // Adjust the y position as needed
+        .attr("y2", xAxis.y)
+        .attr("stroke", "blue")
+        .attr("stroke-width", 2);
+
+        // Add lines to represent 5-hour and 30-hour windows
+    const fiveHoursLine  =  svg.append("line")
+        .attr("x1", x(fiveHoursAfter))
+        .attr("x2", x(fiveHoursAfter))
+        .attr("y1", y - 10) // Adjust the y position as needed
+        .attr("y2", xAxis.y)
+        .attr("stroke", "green")
+        .attr("stroke-width", 2);
+
+    const thirtyHoursLine = svg.append("line")
+        .attr("x1", x(thirtyHoursAfter))
+        .attr("x2", x(thirtyHoursAfter))
+        .attr("y1", y - 10) // Adjust the y position as needed
+        .attr("y2", xAxis.y)
+        .attr("stroke", "red")
+        .attr("stroke-width", 2);
+
+   // Add labels for the marks with tooltips
+    svg.append("text")
+    .attr("x", x(highlightedDate))
+    .attr("y", y - 20) // Adjust the y position as needed
+    .attr("text-anchor", "middle")
+    .text("Earthquake Hit")
+    .style("fill", "blue")
+    .append("title")
+    .text(`Time: ${highlightedDate.toLocaleTimeString()}`);
+
+    svg.append("text")
+    .attr("x", x(fiveHoursAfter))
+    .attr("y", y - 20) // Adjust the y position as needed
+    .attr("text-anchor", "middle")
+    .text("5 Hours After")
+    .style("fill", "green")
+    .append("title")
+    .text(`Time: ${fiveHoursAfter.toLocaleTimeString()}`);
+
+    svg.append("text")
+    .attr("x", x(thirtyHoursAfter))
+    .attr("y", y - 20) // Adjust the y position as needed
+    .attr("text-anchor", "middle")
+    .text("30 Hours After")
+    .style("fill", "red")
+    .append("title")
+    .text(`Time: ${thirtyHoursAfter.toLocaleTimeString()}`);
+     // Add tooltips to the marks
+    highlightedLine.append("title").text(`Time: ${highlightedDate.toLocaleTimeString()}`);
+    fiveHoursLine.append("title").text(`Time: ${fiveHoursAfter.toLocaleTimeString()}`);
+    thirtyHoursLine.append("title").text(`Time: ${thirtyHoursAfter.toLocaleTimeString()}`);
+
 
     return svg.node();
 }
