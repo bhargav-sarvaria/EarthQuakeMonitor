@@ -1,8 +1,3 @@
-function getFilteredData(startTime, endTime) {
-    // console.log(allData)
-    return allData.filter(d => d.parsedTime >= startTime && d.parsedTime <= endTime);
-}
-
 const stopWords = new Set([
     'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", 
     "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 
@@ -30,33 +25,6 @@ const stopWords = new Set([
 
 let allData = [];
 
-function filterMessagesByTime(startTime, endTime) {
-    return allData.filter(d => {
-        const messageTime = new Date(d.time); // Assuming 'time' is your datetime field in the dataset
-        return messageTime >= startTime && messageTime <= endTime;
-    });
-}
-
-function calculateWordFrequencies(messages) {
-    let dataStr = "";
-
-    const wordCounts = {};
-    messages.forEach(message => {
-        // const words = message.message.split(/\s+/);
-        // words.forEach(word => {
-        //     word = word.toLowerCase().replace(/[^a-z0-9]/g, "");
-        //     if (word && !stopWords.has(word)) {
-        //         wordCounts[word] = (wordCounts[word] || 0) + 1;
-        //     }
-        // });
-
-        dataStr = dataStr +" " +message.essential_words;
-
-    });
-    // return wordCounts;
-    return dataStr;
-}
-
 function createWordCloud(messages) {
    
     const chartDiv = document.getElementById('chart-1');
@@ -71,6 +39,10 @@ function createWordCloud(messages) {
            .append('g')
            .attr('transform', `translate(${width / 2}, ${height / 2})`);
     }
+
+    const tooltip = d3.select('#chart-1').append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
 
     function updateWordCloud(){
         svg.selectAll("*").remove();
@@ -108,7 +80,7 @@ function createWordCloud(messages) {
             return d3.descending(a.value, b.value);
         });
     
-        var slicedNest = nest.slice(0, 250);
+        var slicedNest = nest.slice(0, 400);
         var mappedData = slicedNest.map(function(entry) {
             return { text: entry.key, size: entry.value };
         });
@@ -117,9 +89,9 @@ function createWordCloud(messages) {
         var layout = d3.layout.cloud()
                         .size([width, height])
                         .words(mappedData.map(function(d) { return {text: d.text, size:d.size}; }))
-                        .padding(5)        //space between words
+                        .padding(5)  
                         .rotate(function() { return ~~(Math.random() * 2) * 90; })
-                        .fontSize(function(d) { return d.size/30; })      // font size of words
+                        .fontSize(function(d) { return d.size/15; })  
                         .on("end", draw);
         layout.start();
   
@@ -137,18 +109,37 @@ function createWordCloud(messages) {
                 .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
-                .text(function(d) { return d.text; });
+                .text(function(d) { return d.text; })
+                .on('mouseover', function (event, d) {
+                    const word = event.text;
+                    const filteredMessages = messages_filtered.filter((message) =>
+                        message.essential_words.includes(word)
+                    );
+                    tooltip.transition()
+                        .duration(200)
+                        .style('opacity', 1);
+                    tooltip.html('<b>Messages containing "' + word + '":</b><br>' +
+                        filteredMessages.slice(0,10)
+                            .filter((message) => message.is_disaster_related === "True" && !message.message.startsWith("re:"))
+                            .map((message) => message.message)
+                        .join('<br>'))
+                        .style('left', (event.pageX+600) + 'px')
+                        .style('top', (event.pageY - 28000) + 'px');
+                })
+                .on('mouseout', function () {
+                    tooltip.transition()
+                        .duration(500)
+                        .style('opacity', 0);
+                });
         }
-    
     }
-
     updateWordCloud();
     return updateWordCloud;
 }
 
 
 window.addEventListener('DOMContentLoaded', async () => {
-    d3.csv('words_essential.csv').then(data => {
+    d3.csv('words_essential_2.csv').then(data => {
         const updateWordCloud = createWordCloud(data);
         slider.addEventListener('change', updateWordCloud);
     });    

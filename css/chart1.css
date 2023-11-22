@@ -1,0 +1,17 @@
+.tooltip {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.9); /* Set a background color */
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    pointer-events: none; /* Ensure that the tooltip doesn't interfere with mouse events */
+    opacity: 0; /* Start with opacity set to 0 to hide it initially */
+}
+
+.tooltip .show-more-button {
+display: none;
+}
+  
+.tooltip.expanded .show-more-button {
+display: block;
+}
