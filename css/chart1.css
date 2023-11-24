@@ -1,17 +1,19 @@
-.tooltip {
+.chart1Tooltip {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.9); /* Set a background color */
     border: 1px solid #ccc;
     padding: 10px;
+    width: 1000px;
     border-radius: 5px;
     pointer-events: none; /* Ensure that the tooltip doesn't interfere with mouse events */
     opacity: 0; /* Start with opacity set to 0 to hide it initially */
+    z-index: 1000;
 }
 
-.tooltip .show-more-button {
+.chart1Tooltip .show-more-button {
 display: none;
 }
   
-.tooltip.expanded .show-more-button {
+.chart1Tooltip.expanded .show-more-button {
 display: block;
 }
