@@ -19,7 +19,7 @@ const stopWords = new Set([
     "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 
     'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', 
     "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't",
-    'anyone', 'someone', 'anything', 'something', 'anywhere', 'somewhere'
+    'anyone', 'someone', 'anything', 'something', 'anywhere', 'somewhere','ca'
 ]);
 
 
@@ -34,7 +34,7 @@ const disaster_keywords = new Set([
     'fatalities', 'alert', 'warning', 'impact', 'quivering','trembling','wobbling','rumble',
     'shuddering','vibrating','evacuating','holes','meds','food', 'rubble','hotspots','volunteers','red tag','not safe',
     'fuel','flash lights','batteries','stocked up','camp','road','outage','shortages','escape','apocalypse','lives','aftershock','freindatalities',
-    'trapped','shower','restore','park','patients','brick','blood','died','shuddering'
+    'trapped','shower','restore','park','patients','brick','blood','died','shuddering','power'
     ])
 
 const irrelavant_words = ['parking spot','parked','parking']
@@ -104,7 +104,7 @@ function createWordCloud(messages) {
             return d3.descending(a.value, b.value);
         });
     
-        var slicedNest = nest.slice(0, 200);
+        var slicedNest = nest.slice(0, 300);
         var mappedData = slicedNest.map(function(entry) {
             return { text: entry.key, size: entry.value };
         });
@@ -112,8 +112,8 @@ function createWordCloud(messages) {
         mappedData.sort((a, b) => b.size - a.size);
         var layout = d3.layout.cloud()
                         .size([width, height])
-                        .words(mappedData.map(function(d) { return {text: d.text, size: disaster_keywords.has(d.text) && !irrelavant_words.includes(d.text)? d.size :d.size/10}; }))
-                        .padding(5)  
+                        .words(mappedData.map(function(d) { return {text: d.text, size: disaster_keywords.has(d.text) && !irrelavant_words.includes(d.text)? d.size :d.size/10 , isDisasterRelated: disaster_keywords.has(d.text)}; }))
+                        .padding(15)  
                         .rotate(function() { return ~~(Math.random() * 2) * 90; })
                         .fontSize(function(d) { return d.size; })  
                         .on("end", draw);
@@ -127,7 +127,9 @@ function createWordCloud(messages) {
                 .data(words)
                 .enter().append("text")
                 .style("font-size", function(d) { return d.size; })
-                .style("fill", "#69b3a2")
+                .style("fill", function(d) {
+                    return d.isDisasterRelated ? "#FF0000" : "#000000"; 
+                  })
                 .attr("text-anchor", "middle")
                 .style("font-family", "Impact")
                 .attr("transform", function(d) {
@@ -153,15 +155,14 @@ function createWordCloud(messages) {
                     if (filteredMessages.length > 10) {
                         tooltipHtml += '<br><a href="#" class="expand-tooltip">More...</a>';
                     }
-
                     tooltip.transition()
                     .duration(200)
                     .style('opacity', 1)
                     .style('pointer-events', 'auto');
                     
                     tooltip.html(tooltipHtml)
-                        .style('left', 1000+ 'px') // Adjusted position
-                        .style('top', 20 + 'px')  // Adjusted position
+                    .style('left', (d3.event.pageX + 50) + 'px')
+                    .style('top', (d3.event.pageY -200) + 'px');
 
                     const closeBtn = document.getElementsByClassName('close-tooltip')[0];
                     if (closeBtn) {
@@ -185,8 +186,8 @@ function createWordCloud(messages) {
                             expandedTooltipHtml += '</tbody></table>';
                             tooltip.html(expandedTooltipHtml)
                                 .style('opacity', 1)
-                                .style('left', 1000 + 'px')
-                                .style('top', 20 + 'px');
+                                .style('left', (d3.event.pageX + 50) + 'px')
+                                .style('top', (d3.event.pageY - 15) + 'px');
 
                             const newCloseBtn = document.getElementsByClassName('close-tooltip')[0];
                             if (newCloseBtn) {
@@ -199,6 +200,11 @@ function createWordCloud(messages) {
                         };
                     }
                 })
+                .on('mouseout', function() {
+                    const tooltip = d3.select('.chart1Tooltip');
+                    tooltip.transition().duration(2000).style('opacity', 0);
+                })
+                
         }
     }
     updateWordCloud();
