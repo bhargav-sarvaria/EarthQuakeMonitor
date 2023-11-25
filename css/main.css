@@ -9,15 +9,15 @@
 }
 
 #main-container {
-  height: calc(100vh - 100px);
+  min-height: calc(100vh - 100px);
 }
 
 .chart {
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 20px;
-  padding: 10px;
-  height: calc(50% - 10px);
+  padding: 5px;
+  height: calc(50% - 5px);
   /* Adjust height for spacing */
   display: flex;
   justify-content: center;
@@ -50,7 +50,7 @@
   max-width: min-content;
 }
 
-#tooltip>* {
+#tooltip > * {
   margin: 0;
 }
 

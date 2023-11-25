@@ -1,0 +1,116 @@
+#chart5-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  align-items: flex-start;
+}
+
+#chart5-linechart {
+  height: 100%;
+  width: 100%;
+}
+
+/* For Multi Select Dropdown */
+:root {
+  --blue: #0255f0;
+  --lt-gray: #cccccc;
+  --dk-gray: #767676;
+}
+
+#chart5-container fieldset {
+  border: none;
+}
+
+#chart5-container fieldset > label {
+  display: inline-block;
+  width: 100px;
+  font-weight: bold;
+  vertical-align: top;
+  font-size: 1rem;
+  line-height: 28px;
+}
+
+#chart5-container fieldset > label::after {
+  content: ":";
+}
+
+#chart5-container select,
+#chart5-container details {
+  display: inline-block;
+  width: 175px;
+  background-color: white;
+  cursor: pointer;
+}
+
+#chart5-container select,
+#chart5-container summary {
+  border: 1px solid var(--lt-gray);
+  border-collapse: collapse;
+  border-radius: 4px;
+  padding: 4px;
+  width: 175px;
+  background-color: white;
+  cursor: pointer;
+}
+
+#chart5-container details[open] > summary::marker {
+  color: var(--blue);
+}
+
+#chart5-container select:focus,
+#chart5-container summary:focus,
+#chart5-container summary:active {
+  box-shadow: 0 0 5px 1px var(--blue);
+}
+
+#chart5-container ul {
+  width: 175px;
+  background-color: white;
+  position: absolute;
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+  margin-top: 2px;
+  border: 1px solid var(--dk-gray);
+  box-shadow: 0 0 5px 1px var(--lt-gray);
+}
+
+#chart5-container li {
+  margin: 0px;
+  padding: 0px;
+}
+
+#chart5-container li > label {
+  cursor: pointer;
+  display: inline-block;
+  width: 100%;
+  text-align: start;
+  margin: 0;
+  padding-left: 10px;
+}
+#chart5-container li > label > input {
+  margin-right: 5px;
+}
+
+#chart5-container li > label:hover,
+#chart5-container li > label:has(input:checked) {
+  background-color: var(--dk-gray);
+  color: white;
+}
+
+.chart5-dropdown {
+  padding: 5px 0 0 5px;
+}
+
+.linechart-tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 5px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  pointer-events: none;
+  display: none;
+  font-size: 16px;
+  z-index: 1000;
+}
