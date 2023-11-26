@@ -19,9 +19,10 @@
 
 #chart5-container fieldset {
   border: none;
+  color: black;
 }
 
-#chart5-container fieldset > label {
+#chart5-container fieldset>label {
   display: inline-block;
   width: 100px;
   font-weight: bold;
@@ -30,7 +31,7 @@
   line-height: 28px;
 }
 
-#chart5-container fieldset > label::after {
+#chart5-container fieldset>label::after {
   content: ":";
 }
 
@@ -53,7 +54,7 @@
   cursor: pointer;
 }
 
-#chart5-container details[open] > summary::marker {
+#chart5-container details[open]>summary::marker {
   color: var(--blue);
 }
 
@@ -80,7 +81,7 @@
   padding: 0px;
 }
 
-#chart5-container li > label {
+#chart5-container li>label {
   cursor: pointer;
   display: inline-block;
   width: 100%;
@@ -88,12 +89,13 @@
   margin: 0;
   padding-left: 10px;
 }
-#chart5-container li > label > input {
+
+#chart5-container li>label>input {
   margin-right: 5px;
 }
 
-#chart5-container li > label:hover,
-#chart5-container li > label:has(input:checked) {
+#chart5-container li>label:hover,
+#chart5-container li>label:has(input:checked) {
   background-color: var(--dk-gray);
   color: white;
 }
