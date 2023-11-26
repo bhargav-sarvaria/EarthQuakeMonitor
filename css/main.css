@@ -35,7 +35,7 @@ text {
   align-items: center;
   text-align: center;
 
-  background-color: rgba(91, 91, 91, 1);
+  background-color: rgb(67, 55, 55);
   border-radius: 10px;
   box-shadow: 4px 3px 10px 4px rgb(47, 47, 47);
 }

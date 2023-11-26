@@ -8,6 +8,7 @@ const createLineChart = (locations, measure) => {
     let dataArray = DATA.filter(obj => {
         return dateExtent[0] <= obj.time_rounded && obj.time_rounded <= dateExtent[1]
     });
+
     console.log(measure);
 
     // Transform the data
@@ -15,7 +16,7 @@ const createLineChart = (locations, measure) => {
         let transformedEntry = { "time_rounded": entry.time_rounded };
         Object.keys(entry).forEach(location => {
         if (location !== "time_rounded") {
-            transformedEntry[location] = entry[location][measure];
+            transformedEntry[location] = entry[location][YAXIS[measure]];
         }
         });
         return transformedEntry;
@@ -200,7 +201,7 @@ const createLineChart = (locations, measure) => {
         .attr('transform', 'rotate(-90)')
         .attr('x', -height / 2)
         .attr('y', -margin.left + 20) // Adjust position as needed
-        .text('Count');
+        .text(`${measure}`);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -230,20 +231,20 @@ window.addEventListener('DOMContentLoaded', async () => {
                     if (!this.open) {
                         const selectedOptions = getSelectedLocations();
                         console.log(selectedOptions);
-                        createLineChart(selectedOptions['selectedLocations'], YAXIS[selectedOptions['selectedMeasures'][0]]);
+                        createLineChart(selectedOptions['selectedLocations'], selectedOptions['selectedMeasures'][0]);
                     }
                 });
             });
 
             const selectedOptions = getSelectedLocations();
-            createLineChart(selectedOptions['selectedLocations'],  YAXIS[selectedOptions['selectedMeasures'][0]]);
+            createLineChart(selectedOptions['selectedLocations'],  selectedOptions['selectedMeasures'][0]);
         })
         .catch(error => console.error('Error fetching the JSON file:', error));
 
     document.getElementById('dateSlider').addEventListener('change', function () {
         // getSelectedLocations()
         const selectedOptions = getSelectedLocations();
-        createLineChart(selectedOptions['selectedLocations'],  YAXIS[selectedOptions['selectedMeasures'][0]]);
+        createLineChart(selectedOptions['selectedLocations'],  selectedOptions['selectedMeasures'][0]);
     });
 });
 
