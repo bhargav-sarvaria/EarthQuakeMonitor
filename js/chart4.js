@@ -2,8 +2,6 @@
  * Bar chart for resources per location
  */
 
-const COLOR_SCHEME = ["#4e79a7", "#f28e2c", "#e15759", "#59a14f", "#76b7b2", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"]
-
 const countEventsByLocation = (data, slider) => {
     const eventCountsByLocation = {};
     const dateExtent = slider.value;
@@ -121,6 +119,7 @@ const createStackedBarChart = (data) => {
         .attr("in", "SourceGraphic");
 
     const xAxis = svg.append("g");
+    const xAxisLabel = svg.append("text");
 
     const yAxis = svg.append("g");
 
@@ -156,23 +155,25 @@ const createStackedBarChart = (data) => {
             .range([height - marginBottom, marginTop])
             .padding([0.2]);
             
-            const x = d3.scaleLinear()
+        const x = d3.scaleLinear()
             .domain(stackedBarData.x.domain)
             .range([marginLeft, width - marginRight])
 
-        const color = d3.scaleOrdinal()
-            .domain(stackedBarData.events)
-            .range(COLOR_SCHEME);
 
         // Add the x-axis.
         xAxis
             .attr("transform", `translate(0,${height - marginBottom})`)
             .call(d3.axisBottom(x));
+        xAxisLabel
+            .attr("x", "50%")
+            .attr("y", height - marginBottom + 35)
+            .text("Messages")
 
         // Add the y-axis.
         yAxis
             .attr("transform", `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y));
+
 
         svg.selectAll(".sbc-bar")
             .data(stackedBarData.data, d => d[0])
@@ -215,7 +216,7 @@ const createStackedBarChart = (data) => {
             .attr("x", d => x(d[1][0]))
             .attr("width", d => x(d[1][1]) - x(d[1][0]))
             .attr("height", y.bandwidth())
-            .attr("fill", d => color(d[0]));
+            .attr("fill", d => resourceColor(d[0]));
     }
     updateChart();
     return updateChart;
@@ -223,15 +224,25 @@ const createStackedBarChart = (data) => {
 
 window.addEventListener('DOMContentLoaded', async () => {
     const messages = await d3.csv('../cleaned_json.csv');
+    const filtered = [];
+    const invalidLocations = ['Wilson Forest', 'UNKNOWN', '<Location with-held due to contract>']
     for(const message of messages){
+        if(invalidLocations.includes(message.location)){
+            continue;
+        }
         try {
             message.events = JSON.parse(message.events);
         } catch(error){
-            message.events = [];
+            continue;
+        }
+        message.events = message.events.filter(event => RESOURCES.includes(event));
+        if(message.events.length <= 0){
+            continue;
         }
         message.time = new Date(message.time);
+        filtered.push(message);
     }
     // const slider = document.getElementById('dateSlider');
-    const updateChart = createStackedBarChart(messages);
+    const updateChart = createStackedBarChart(filtered);
     slider.addEventListener('change', updateChart);
-});
+}, {once: true});

@@ -1,10 +1,21 @@
+body {
+  background: rgb(91, 91, 91);
+  background: radial-gradient(circle, rgba(91, 91, 91, 1) 0%, rgba(38, 38, 38, 1) 100%);
+  color: white;
+  margin-bottom: 2em;
+}
+
+text {
+  fill: white
+}
+
 .title {
   height: 100px;
   text-align: center;
   padding: 20px 0;
   font-size: 24px;
   font-weight: bold;
-  background: #f8f9fa;
+  /* background: #f8f9fa; */
   /* Light gray background */
 }
 
@@ -23,6 +34,10 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  background-color: rgba(91, 91, 91, 1);
+  border-radius: 10px;
+  box-shadow: 4px 3px 10px 4px rgb(47, 47, 47);
 }
 
 #slider-container {
@@ -50,7 +65,7 @@
   max-width: min-content;
 }
 
-#tooltip > * {
+#tooltip>* {
   margin: 0;
 }
 

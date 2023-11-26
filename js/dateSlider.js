@@ -96,6 +96,15 @@ const createDoubleSlider = () => {
     const svg = wrapper.append("svg")
         .attr("id", "dateSlider");
     
+    const defs = svg.append("defs");
+    const radialGradient = defs.append("radialGradient")
+        .attr("id", "redToGoldRadialGradient");
+    const goldStop = radialGradient.append("stop")
+        .attr("offset", "10%")
+        .attr("stop-color", "gold");
+    const redStop = radialGradient.append("stop")
+        .attr("offset", "95%")
+        .attr("stop-color", "red");
 
     const highlightedDate = new Date('04/06/2020 01:00:00 PM')
     
@@ -155,8 +164,8 @@ const createDoubleSlider = () => {
         .attr("y", y)
         .attr("x", marginLeft)
         .attr("width", width - (marginRight + marginLeft))
-        .attr("height", 5)
-        .attr("fill", "black");
+        .attr("height", 3)
+        .attr("fill", "white");
 
     const circleDim = {
         r: 20
@@ -177,19 +186,20 @@ const createDoubleSlider = () => {
             .attr("r", circleDim.r)
             .attr("cx", centerX)
             .attr("cy", y)
-            .attr("fill", "black");
+            .attr("fill", "url('#redToGoldRadialGradient')")
+            .attr("filter", "url('#dropshadow')");
         
         sliderButton.append("rect")
             .attr("x", (centerX - (rectDim.width / 2)))
             .attr("y", y)
             .attr("width", rectDim.width)
             .attr("height", rectDim.height)
-            .attr("fill", "red");
+            .attr("fill", "white");
         sliderButton.append("circle")
             .attr("r", circleDim.r / 4)
             .attr("cx", centerX)
             .attr("cy", y)
-            .attr("fill", "red");
+            .attr("fill", "white")
         return sliderButton;
     }
 
@@ -214,16 +224,16 @@ const createDoubleSlider = () => {
         .attr("x2", x(highlightedDate))
         .attr("y1", y - 10) // Adjust the y position as needed
         .attr("y2", xAxis.y)
-        .attr("stroke", "blue")
+        .attr("stroke", "white")
         .attr("stroke-width", 2);
 
         // Add lines to represent 5-hour and 30-hour windows
     const fiveHoursLine  =  svg.append("line")
         .attr("x1", x(fiveHoursAfter))
         .attr("x2", x(fiveHoursAfter))
-        .attr("y1", y - 10) // Adjust the y position as needed
+        .attr("y1", y - 0) // Adjust the y position as needed
         .attr("y2", xAxis.y)
-        .attr("stroke", "green")
+        .attr("stroke", "red")
         .attr("stroke-width", 2);
 
     const thirtyHoursLine = svg.append("line")
@@ -231,7 +241,7 @@ const createDoubleSlider = () => {
         .attr("x2", x(thirtyHoursAfter))
         .attr("y1", y - 10) // Adjust the y position as needed
         .attr("y2", xAxis.y)
-        .attr("stroke", "red")
+        .attr("stroke", "#f28e2c")
         .attr("stroke-width", 2);
 
    // Add labels for the marks with tooltips
@@ -240,16 +250,16 @@ const createDoubleSlider = () => {
     .attr("y", y - 20) // Adjust the y position as needed
     .attr("text-anchor", "middle")
     .text("Earthquake Hit")
-    .style("fill", "blue")
+    .style("fill", "white")
     .append("title")
     .text(`Time: ${highlightedDate.toLocaleTimeString()}`);
 
     svg.append("text")
     .attr("x", x(fiveHoursAfter))
-    .attr("y", y - 20) // Adjust the y position as needed
+    .attr("y", y - 5) // Adjust the y position as needed
     .attr("text-anchor", "middle")
     .text("5 Hours After")
-    .style("fill", "green")
+    .style("fill", "red")
     .append("title")
     .text(`Time: ${fiveHoursAfter.toLocaleTimeString()}`);
 
@@ -258,7 +268,7 @@ const createDoubleSlider = () => {
     .attr("y", y - 20) // Adjust the y position as needed
     .attr("text-anchor", "middle")
     .text("30 Hours After")
-    .style("fill", "red")
+    .style("fill", "#f28e2c")
     .append("title")
     .text(`Time: ${thirtyHoursAfter.toLocaleTimeString()}`);
      // Add tooltips to the marks
