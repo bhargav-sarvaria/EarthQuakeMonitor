@@ -95,7 +95,6 @@ const createLineChart = (locations, measure) => {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Temperature (ºF)");
 
     var city = svg.selectAll(".city")
         .data(cities)

@@ -113,7 +113,7 @@ function createWordCloud(messages) {
         var layout = d3.layout.cloud()
                         .size([width, height])
                         .words(mappedData.map(function(d) { return {text: d.text, size: disaster_keywords.has(d.text) && !irrelavant_words.includes(d.text)? d.size :d.size/10 , isDisasterRelated: disaster_keywords.has(d.text)}; }))
-                        .padding(15)  
+                        .padding(20)  
                         .rotate(function() { return ~~(Math.random() * 2) * 90; })
                         .fontSize(function(d) { return d.size; })  
                         .on("end", draw);
