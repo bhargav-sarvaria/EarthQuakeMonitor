@@ -1,11 +1,26 @@
 let DATA = [];
 
-const createLineChart = (locations) => {
+const YAXIS = {"Mssg Count": "num_messages", "Fatalities Count": "num_fatalities"};
+
+const createLineChart = (locations, measure) => {
     d3.select("#chart5-linechart svg").remove();
     const dateExtent = document.getElementById('dateSlider').value;
-    const data = DATA.filter(obj => {
+    let dataArray = DATA.filter(obj => {
         return dateExtent[0] <= obj.time_rounded && obj.time_rounded <= dateExtent[1]
     });
+    console.log(measure);
+
+    // Transform the data
+    const data = dataArray.map(entry => {
+        let transformedEntry = { "time_rounded": entry.time_rounded };
+        Object.keys(entry).forEach(location => {
+        if (location !== "time_rounded") {
+            transformedEntry[location] = entry[location][measure];
+        }
+        });
+        return transformedEntry;
+  });
+
 
     const margin = { top: 10, right: 10, bottom: 50, left: 50 };
     const wrapper = d3.select("#chart5-linechart");
@@ -190,7 +205,7 @@ const createLineChart = (locations) => {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    fetch('data/chart5.json')
+    fetch('data/chart5_2.json')
         .then(response => response.json())
         .then(data => {
             var parseDate = d3.timeParse("%Y-%m-%d %H:%M");
@@ -198,40 +213,68 @@ window.addEventListener('DOMContentLoaded', async () => {
                 d.time_rounded = parseDate(d.time_rounded);
             });
 
+                    // Separate the creation of 'Locations' and 'Counts' groups
+            createGroup('Locations');
+            createGroup('Counts');
+
             DATA = data;
             const locations = Object.keys(data[0]).filter(key => {
                 return key !== "time_rounded";
             }).sort();
             locations.forEach(location => addOption(location, location == 'Downtown'));
+            Object.keys(YAXIS).forEach(cnt => addYAxisOption(cnt, cnt == 'Mssg Count'));
 
-            var details = document.querySelector('fieldset details');
-            details.addEventListener('toggle', function () {
-                if (!details.open) {
-                    const selectedOptions = getSelectedLocations();
-                    createLineChart(selectedOptions);
-                }
+            var details = document.querySelectorAll('fieldset details');
+        
+            details.forEach(function(detail) {
+                detail.addEventListener('toggle', function() {
+                    if (!this.open) {
+                        const selectedOptions = getSelectedLocations();
+                        console.log(selectedOptions);
+                        createLineChart(selectedOptions['selectedLocations'], YAXIS[selectedOptions['selectedMeasures'][0]]);
+                    }
+                });
             });
 
             const selectedOptions = getSelectedLocations();
-            createLineChart(selectedOptions);
+            createLineChart(selectedOptions['selectedLocations'],  YAXIS[selectedOptions['selectedMeasures'][0]]);
         })
         .catch(error => console.error('Error fetching the JSON file:', error));
 
     document.getElementById('dateSlider').addEventListener('change', function () {
         // getSelectedLocations()
-        createLineChart(getSelectedLocations());
+        const selectedOptions = getSelectedLocations();
+        createLineChart(selectedOptions['selectedLocations'],  YAXIS[selectedOptions['selectedMeasures'][0]]);
     });
 });
 
 
+function createGroup(groupName) {
+    var details = document.createElement('details');
+    details.id = groupName.toLowerCase(); // 'locations' or 'counts'
+    details.open = false; // Set to false if you want the group to start collapsed
+
+    var summary = document.createElement('summary');
+    summary.textContent = groupName;
+    details.appendChild(summary);
+
+    var ul = document.createElement('ul');
+    ul.id = `${groupName.toLowerCase()}-list`; // 'locations-list' or 'counts-list'
+    details.appendChild(ul);
+
+    var container = document.querySelector('#chart5-container fieldset');
+    container.appendChild(details);
+}
+
 function addOption(value, checked = false) {
-    var ul = document.querySelector('#chart5-container fieldset details ul');
+    // Now target the specific 'locations-list' for location options
+    var ul = document.querySelector('#locations-list');
     var li = document.createElement('li');
     var label = document.createElement('label');
     var checkbox = document.createElement('input');
 
     checkbox.type = 'checkbox';
-    checkbox.name = 'fc';
+    checkbox.name = 'location'; // Changed from 'fc' to 'location'
     checkbox.value = value;
     checkbox.checked = checked;
 
@@ -241,19 +284,46 @@ function addOption(value, checked = false) {
     ul.appendChild(li);
 }
 
-function getSelectedLocations() {
-    var selectedColors = [];
-    var checkboxes = document.querySelectorAll('input[name="fc"]:checked');
+function addYAxisOption(value, checked = false) {
+    // Now target the specific 'counts-list' for count options
+    var ul = document.querySelector('#counts-list');
+    var li = document.createElement('li');
+    var label = document.createElement('label');
+    var radioButton = document.createElement('input');
 
-    checkboxes.forEach(function (checkbox) { selectedColors.push(checkbox.value); });
-    return selectedColors;
+    radioButton.type = 'radio';
+    radioButton.name = 'yaxis';
+    radioButton.value = value;
+    radioButton.checked = checked;
+
+    label.appendChild(radioButton);
+    label.appendChild(document.createTextNode(value));
+    li.appendChild(label);
+    ul.appendChild(li);
+}
+
+function getSelectedLocations() {
+    var selectedLocations = [];
+    var selectedMeasure = [];
+    var checkboxes = document.querySelectorAll('input[name="location"]:checked');
+    var radios = document.querySelectorAll('input[name="yaxis"]:checked');
+
+    checkboxes.forEach(function (checkbox) { selectedLocations.push(checkbox.value); });
+    radios.forEach(function (radio) { selectedMeasure.push(radio.value); });
+    return {
+        selectedLocations: selectedLocations,
+        selectedMeasures: selectedMeasure
+    };
 }
 
 var dropdown = document.getElementById('chart5-value-dropdown');
 function handleDocumentClick(event) {
-    if (!dropdown.contains(event.target)) {
-        dropdown.removeAttribute('open');
-    }
+    var allDetails = document.querySelectorAll('fieldset details');
+    allDetails.forEach(function(details) {
+        if (!details.contains(event.target)) {
+        details.removeAttribute('open');
+        }
+    });
 }
 
 document.addEventListener('click', handleDocumentClick);

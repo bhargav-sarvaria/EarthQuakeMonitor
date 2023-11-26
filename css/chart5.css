@@ -114,3 +114,41 @@
   font-size: 16px;
   z-index: 1000;
 }
+
+
+.group {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.group summary {
+  padding: 4px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.group summary::-webkit-details-marker {
+  display: none;
+}
+
+.group-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.group-list li {
+  padding: 4px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.group-list li:last-child {
+  border-bottom: none;
+}
+
+/* Style for checkboxes and radios */
+input[type="checkbox"], input[type="radio"] {
+  margin-right: 8px;
+}
