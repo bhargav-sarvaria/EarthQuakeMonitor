@@ -5,15 +5,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+let heatSVG;
+
+let isHighlighted = false;
+
 function createHeatmap(dataset) {
     const chartDiv = document.getElementById('chart-2');
     const width = chartDiv.clientWidth;
     const height = chartDiv.clientHeight;
 
-    let svg = d3.select('#chart-2').select('svg');
-    if (svg.empty()) {
-        svg = d3.select('#chart-2').append('svg');
-        svg.attr('width', width)
+    heatSVG = d3.select('#chart-2').select('svg');
+    if (heatSVG.empty()) {
+        heatSVG = d3.select('#chart-2').append('svg');
+        heatSVG.attr('width', width)
             .attr('height', height)
             .append('g')
             .attr('transform', `translate(${width / 2}, ${height / 2})`);
@@ -23,7 +27,7 @@ function createHeatmap(dataset) {
     const incidents = ["RADIATION","EARTHQUAKE", "DEATH", "POWER", "FIRE", "GAS", "FLOOD"];
 
     // Create dropdown options
-    const dropdown = svg.append("foreignObject")
+    const dropdown = heatSVG.append("foreignObject")
         .attr("width", 750)
         .attr("height", 30)
         .append("xhtml:body")
@@ -169,15 +173,16 @@ uniqueLocations.forEach(location => {
     });
 });
 
+console.log(uniqueData)
 
 const heatmapData = Object.values(uniqueData);
-svg.selectAll(".old-x-axis").remove();
+heatSVG.selectAll(".old-x-axis").remove();
 
 var x = d3.scaleBand()
     .range([0, width / 1.5])
     .domain(uniqueIntervals)
     .padding(0.01);
-svg.append("g")
+heatSVG.append("g")
     .attr("class", "old-x-axis") 
     .attr("transform", "translate(110," + (height / 1.5 + 105) + ")")
     .call(d3.axisBottom(x))
@@ -187,14 +192,14 @@ svg.append("g")
     .attr("dy", ".15em");
 
 // Build Y scales and axis:
-svg.selectAll(".old-y-axis").remove();
+heatSVG.selectAll(".old-y-axis").remove();
 
 // Build Y scales and axis:
 var y = d3.scaleBand()
     .range([height / 1.5, 0])
     .domain(uniqueLocations)
     .padding(0.01);
-svg.append("g")
+heatSVG.append("g")
     .attr("class", "old-y-axis") // Add a class to identify the old y-axis
     .attr("transform", "translate(110, 100)")
     .call(d3.axisLeft(y))
@@ -212,14 +217,14 @@ var myColor = d3.scaleQuantile()
 .domain([0, maxEventCount/2, maxEventCount])
 .range(colors);
 
-svg.selectAll(".legend").remove();
+heatSVG.selectAll(".legend").remove();
 
 // Define the dimensions of the legend bar
 const legendHeight = 500; // Height of the vertical legend
 const legendWidth = 20;  // Width of the vertical legend
 
 // Append a legend group to your SVG
-const legend2 = svg.append("g")
+const legend2 = heatSVG.append("g")
   .attr("class", "legend")
   .attr("transform", "translate(980," + (height - legendHeight - 250) + ")"); // Adjust for legend height and position
 
@@ -276,13 +281,18 @@ var tooltip = d3.select("#chart-2")
 .style("border-radius", "5px")
 .style("padding", "5px")
 
+let rt = heatSVG.selectAll(".heatmap-rect:not(.highlighted-row)");
+console.log(rt);
+
 // Draw rectangles for the heatmap
-svg.selectAll(".heatmap-rect").remove();
-svg.selectAll(".heatmap-rect")
+heatSVG.selectAll(".heatmap-rect").remove();
+heatSVG.selectAll(".heatmap-rect")
     .data(heatmapData)
     .enter()
     .append("rect")
-    .attr("class", "heatmap-rect")
+    // .attr("class", "heatmap-rect")
+    .attr("class", function(d) { return "heatmap-rect location-" + d.location.replace(/\s+/g, '-'); }) // Add unique class based on location
+
     .attr("x", function (d) { return x(d.interval)+110; })
     .attr("y", function (d) { return y(d.location)+100; })
     .attr("rx", 4)
@@ -294,14 +304,26 @@ svg.selectAll(".heatmap-rect")
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave);
 
+    if(isHighlighted){
+        selectedregionarray.forEach(location => highlightRow(location))
+    }
+
 // Rest of your code remains unchanged
 
 function mouseover(d) {
     tooltip.style("opacity", 1);
-    d3.select(this)
+
+    if(!isHighlighted){
+        d3.select(this)
       .style("stroke", "black")
+      .style("stroke-width", "5px") // Increase the stroke width
       .style("opacity", 1)
+      .style("fill", d => d3.rgb(myColor(d.eventCount * 10)).brighter(0.5)); // Slightly brighten the fill color
+    }
+    
 }
+
+
 
 function mousemove(d) {
     tooltip
@@ -313,6 +335,7 @@ function mousemove(d) {
 
 function mouseleave(d) {
     tooltip.style("opacity", 0);
+    if(!isHighlighted)
     d3.select(this)
     .style("stroke", "none")
 
@@ -322,3 +345,43 @@ function mouseleave(d) {
     return updateHeatmap
 } 
     
+
+
+function highlightRow(selectedLocation) {
+    isHighlighted = true;
+
+    // Remove highlighting from all rows
+    // heatSVG.selectAll(".heatmap-rect").classed("highlighted-row", false);
+  
+    heatSVG.selectAll(".heatmap-rect:not(.highlighted-row)")
+    .style("opacity", 0.2);
+
+    // Highlight the selected row by setting opacity to full
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
+  .style("opacity", 1);
+    // Highlight the selected row
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
+      .classed("highlighted-row", true);
+  }
+
+
+function dehighlightAll(){
+    isHighlighted = false;
+    heatSVG.selectAll(".heatmap-rect").classed("highlighted-row", false);
+    heatSVG.selectAll(".heatmap-rect")
+    .style("opacity", 1);
+}
+
+function dehighlightRow(selectedLocation) {
+    // Remove highlighting from all rows
+    // heatSVG.selectAll(".heatmap-rect").classed("highlighted-row", false);
+    // heatSVG.selectAll(".heatmap-rect")
+    // .style("opacity", 1);
+
+    // Highlight the selected row
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
+      .classed("highlighted-row", false);
+    
+      heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
+  .style("opacity", 0.2);
+}

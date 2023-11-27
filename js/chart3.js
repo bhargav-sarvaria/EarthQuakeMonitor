@@ -490,16 +490,15 @@ svg.selectAll('g.radial-chart')
 
 function arccounterIncidentType(){
     if(arccounter < 10){
-        arccounter++;
+        
         return "RADIATION";
     }
     else if(arccounter >= 10 && arccounter < 20){
-        arccounter++;
+        
         return "FIRE";
 
     }
     else{
-        arccounter++;
         return "FIRE";
     }
 }
@@ -516,6 +515,7 @@ function findIncidentCount(incdata){
     else{
         inccountstring = (incdata.FIREVAL - 1).toString();
     }
+    arccounter++;
     return inccountstring;
 }
 
@@ -553,6 +553,7 @@ function handleRegionClick(){
         currregion.attr("stroke", "black");
         currregion.attr("stroke-width", 1)
         handleLineChart(currregionname, false);
+        dehighlightRow(currregionname);
     }
     else{
         selectedregionarray.push(currregionname);
@@ -560,11 +561,13 @@ function handleRegionClick(){
         currregion.attr("stroke", "white");
         currregion.attr("stroke-width", 2)
         handleLineChart(currregionname, true);
+        highlightRow(currregionname);
     }
 
     updateWordCloud();
     if(selectedregionarray.length == 0){
         handleLineChart("", true);
+        dehighlightAll();
     }
     updateRadialBars();
     svgchart3.node().value = selectedregionarray;
