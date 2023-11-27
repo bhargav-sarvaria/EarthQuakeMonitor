@@ -201,11 +201,38 @@ var centerCoordinates = [
         .attr("stroke", "black") // Set the stroke color to blue
         .attr("stroke-width", 1)
         .attr('transform', `translate(${chart3width / 4}, ${chart3height / 4})`)
-        .style("opacity", "0.5")
+        .style("opacity", "1.0")
         .on("click", handleRegionClick)
         .append("title")
-        .text(d => d.properties.Nbrhood)
+        .text(d => "Area Name: " + d.properties.Nbrhood + "\n" + "Most Demanded Resource: ")
         ;
+
+        // Append text labels for each region
+svgchart3.selectAll("text.label")
+.data(himarkgeojson.features)
+.enter()
+.append("text")
+.attr("class", "label")
+.attr("transform", d => {
+    const centroid = path.centroid(d);
+    var textrotationangle = 0;
+    var textlableval = d.properties.Nbrhood;
+    if(textlableval == "Wilson Forest" ){
+        textrotationangle = -90;
+    }
+    else if(textlableval == "Scenic Vista" ){
+        textrotationangle = -25;
+    }
+    else if(textlableval == "Chapparal" ){
+        textrotationangle = -90;
+    }
+    return `translate(${centroid[0] + chart3width / 4},${centroid[1] + chart3height / 4}) rotate(${textrotationangle})`;
+})
+.text(d => d.properties.Nbrhood)
+.style("text-anchor", "middle") // Center the text
+.style("font-size", "14px") // Adjust font size as needed
+.style("font-weight", "bold") // Set font weight to bold if needed
+.style("fill", "white"); // Set text color
 
 
      mapRadius = (chart3height / 4)* 1.4;
@@ -226,6 +253,7 @@ var centerCoordinates = [
             const radx = (chart3width / 2) + Math.cos(angle) * mapRadius;
             const y = (chart3height / 2) + Math.sin(angle) * mapRadius;
             const rady = (chart3height / 2) + Math.sin(angle) * mapRadius;
+            
             var nodename = "";
             var nodecolor = "black";
             var nodestarttime = timearray[i];
@@ -256,7 +284,7 @@ var centerCoordinates = [
             .attr("class", "node")
             .attr("cx", d => d.x)
             .attr("cy", d => d.y)
-            .attr("r", 5) 
+            .attr("r", 20) 
             .attr("id", d => d.nodename)
             .attr("nodestarttime", d => d.nodestarttime)
             .attr("nodeendtime", d => d.nodeendtime)
@@ -265,6 +293,18 @@ var centerCoordinates = [
             .append("title")
             .text(d => d.nodename + "\n" + "Start Time: " + d.nodestarttime.toString() +  "\n" + "End Time: " + d.nodeendtime.toString() + "\n" + "X: " + d.x.toString() +  "\n" + "Y: " + d.y.toString())
             ;
+
+            svgchart3.selectAll("text.node")
+    .data(timenodes)
+    .enter()
+    .append("text")
+    .attr("x", function(d) { return d.x; })
+    .attr("y", function(d) { return d.y; })
+    .attr("dy", ".35em") // Adjust the vertical position as needed
+    .style("text-anchor", "middle")
+    .style("font-weight", "bold")
+    .style("fill", d => (d.nodecolor === "black") ? "white" : "black") // Adjust the color as needed
+    .text(function(d) { return parseInt((d.nodename).match(/\d+/)[0]); });
 
 
             mapeventcount = countEventsByLocationMAP(cleanedhimarkdata,slider);
@@ -275,7 +315,7 @@ var centerCoordinates = [
 
             svgchart3.selectAll("path").each(function(d, i) {
                 const currregion = d3.select(this);
-        
+                const currregiontitle = currregion.select("title");
                 // Access the attribute value of the current circle
                 const currregionname = currregion.attr("regionname");
                 
@@ -291,7 +331,7 @@ var centerCoordinates = [
                 }
 
                 currregion.style("fill", d => mapcolorscale(maxLabel));
-                
+                currregiontitle.text("Area Name: " + currregionname + "\n" + "Most Demanded Resource: " + (maxLabel != null ? maxLabel : ""));
             });
     
     
@@ -387,13 +427,13 @@ function handleRegionClick(){
     var currregionname = currregion.attr("regionname");
     if(selectedregionarray.includes(currregionname)){
         selectedregionarray = selectedregionarray.filter(item => item !== currregionname);
-        currregion.style("opacity", "0.5");
+        currregion.style("opacity", "1.0");
         
         handleLineChart(currregionname, false);
     }
     else{
         selectedregionarray.push(currregionname);
-        currregion.style("opacity", "1.0");
+        currregion.style("opacity", "0.5");
         handleLineChart(currregionname, true);
     }
 
