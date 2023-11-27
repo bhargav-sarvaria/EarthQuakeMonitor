@@ -19,25 +19,27 @@ const makeDraggable = (svg, {xAxis, yAxis} = {}) => {
         }
         return element;
     }
+    const getTransform = (draggable) => {
+        var transforms = draggable.transform.baseVal;
+        // Ensure the first transform is a translate transform
+        if (transforms.length === 0 ||
+            transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
+          // Create an transform that translates by (0, 0)
+          var translate = svg.createSVGTransform();
+          translate.setTranslate(0, 0);
+          // Add the translation to the front of the transforms list
+          draggable.transform.baseVal.insertItemBefore(translate, 0);
+        }
+        // Get initial translation amount
+        return transforms.getItem(0);
+    }
     function startDrag(evt) {
         const target = findDraggable(evt.target);
         if (target && target.classList.contains('draggable')) {
             selectedElement = target;
             offset = getMousePosition(evt);
             value = selectedElement.value;
-            // Get all the transforms currently on this element
-            var transforms = selectedElement.transform.baseVal;
-            // Ensure the first transform is a translate transform
-            if (transforms.length === 0 ||
-                transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
-              // Create an transform that translates by (0, 0)
-              var translate = svg.createSVGTransform();
-              translate.setTranslate(0, 0);
-              // Add the translation to the front of the transforms list
-              selectedElement.transform.baseVal.insertItemBefore(translate, 0);
-            }
-            // Get initial translation amount
-            transform = transforms.getItem(0);
+            transform = getTransform(selectedElement);
             offset.x -= transform.matrix.e;
             offset.y -= transform.matrix.f;
           }
@@ -67,6 +69,9 @@ const makeDraggable = (svg, {xAxis, yAxis} = {}) => {
             } else {
                 diffX = 0;
             }
+            if(transform.matrix.e != diffX){
+                console.log('what')
+            }
 
             selectedElement.value = oldValue + diffX;
 
@@ -87,7 +92,23 @@ const makeDraggable = (svg, {xAxis, yAxis} = {}) => {
         }
         value = null;
         selectedElement = null;
-
+    }
+    return function setPostion(draggable, {x, dispatch}) {
+        if(x === draggable.value){
+            return;
+        }
+        draggable.value = x;
+        const transform = getTransform(draggable);
+        // const offsetX = transform.matrix.e / transform.matrix.a;
+        const boundingBox = draggable.getBBox();
+        const centerX = boundingBox.x + (boundingBox.width / 2);
+        transform.setTranslate(x - centerX, 0);
+        if(dispatch){
+            draggable.dispatchEvent(new Event("change", {
+                cancelable: false,
+                bubbles: true,
+            }));
+        }
     }
   }
 
@@ -128,7 +149,7 @@ const createDoubleSlider = () => {
         .domain(extent)
         .range([marginLeft, width - marginRight]);
 
-    makeDraggable(svg.node(), {
+    const setPostion = makeDraggable(svg.node(), {
         xAxis: {
             min: marginLeft, 
             max: width - marginRight
@@ -202,21 +223,26 @@ const createDoubleSlider = () => {
             .attr("fill", "white")
         return sliderButton;
     }
-
+    
     const minDateInput = addSliderButton(range, {centerX: marginLeft});
     const maxDateInput = addSliderButton(range, {centerX: width - marginRight});
-
+    
     svg.node().value = [...extent];
-
+    
     svg.on("change", function(d) {
         const e = d3.event;
         this.value = [minDateInput, maxDateInput]
-            .map((selection, i) => selection.node().value ?
-                 x.invert(selection.node().value) : this.value[i])
-            .sort((a, b) => a < b ? -1 : 1);
+        .map((selection, i) => selection.node().value ?
+        x.invert(selection.node().value) : this.value[i])
+        .sort((a, b) => a < b ? -1 : 1);
         minLabel.text(`Min: ${formatDate(this.value[0])}`);
         maxLabel.text(`Max: ${formatDate(this.value[1])}`);
     });
+
+    const setDateRange = (minDate, maxDate) => {
+        setPostion(minDateInput.node(), {x: x(minDate), dispatch: false});
+        setPostion(maxDateInput.node(), {x: x(maxDate), dispatch: true});
+    }
 
     // Add a line to represent the highlighted date
     const highlightedLine = svg.append("line")
@@ -276,8 +302,7 @@ const createDoubleSlider = () => {
     fiveHoursLine.append("title").text(`Time: ${fiveHoursAfter.toLocaleTimeString()}`);
     thirtyHoursLine.append("title").text(`Time: ${thirtyHoursAfter.toLocaleTimeString()}`);
 
-
-    return svg.node();
+    return {slider: svg.node(), setDateRange};
 }
 
 // createDoubleSlider();
