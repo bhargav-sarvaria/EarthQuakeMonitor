@@ -490,16 +490,15 @@ svg.selectAll('g.radial-chart')
 
 function arccounterIncidentType(){
     if(arccounter < 10){
-        arccounter++;
+        
         return "RADIATION";
     }
     else if(arccounter >= 10 && arccounter < 20){
-        arccounter++;
+        
         return "FIRE";
 
     }
     else{
-        arccounter++;
         return "FIRE";
     }
 }
@@ -516,6 +515,7 @@ function findIncidentCount(incdata){
     else{
         inccountstring = (incdata.FIREVAL - 1).toString();
     }
+    arccounter++;
     return inccountstring;
 }
 
