@@ -8,6 +8,7 @@ var mapeventcount;
 var mapRadius;
 var chart3width;
 var chart3height;
+var arccounter = 0;
 const MAP_COLOR_SCHEME = ["#4e79a7", "#f28e2c", "#e15759", "#59a14f", "#76b7b2", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"]
 var incidentlocationwise= [];
 var timearray = [new Date('04/06/2020'), new Date('04/06/2020 06:00:00 AM'), new Date('04/06/2020 06:00:00 PM'), new Date('04/07/2020 06:00:00 AM'), new Date('04/07/2020 06:00:00 PM'), new Date('04/08/2020 06:00:00 AM'), new Date('04/08/2020 06:00:00 PM'), new Date('04/09/2020 06:00:00 AM'), new Date('04/09/2020 06:00:00 PM'), new Date('04/10/2020 06:00:00 AM'), new Date('04/10/2020 12:00:00 PM')];
@@ -230,7 +231,7 @@ svgchart3.selectAll("text.label")
 })
 .text(d => d.properties.Nbrhood)
 .style("text-anchor", "middle") // Center the text
-.style("font-size", "14px") // Adjust font size as needed
+.style("font-size", "10px") // Adjust font size as needed
 .style("font-weight", "bold") // Set font weight to bold if needed
 .style("fill", "white"); // Set text color
 
@@ -291,7 +292,7 @@ svgchart3.selectAll("text.label")
             .attr("fill", d => d.nodecolor)
             .on("click", handleTimeNodeClick)
             .append("title")
-            .text(d => d.nodename + "\n" + "Start Time: " + d.nodestarttime.toString() +  "\n" + "End Time: " + d.nodeendtime.toString() + "\n" + "X: " + d.x.toString() +  "\n" + "Y: " + d.y.toString())
+            .text(d => d.nodename + "\n" + "Start Time: " + d.nodestarttime.toString() +  "\n" + "End Time: " + d.nodeendtime.toString())
             ;
 
             svgchart3.selectAll("text.node")
@@ -344,8 +345,8 @@ renderRadial();
 function constructRadialLabels(){
     // Define legend data
 const elementLegendData = [
-    { elementLabel: "Fire", elementColor: "orange" },
-    { elementLabel: "Radiation", elementColor: "purple" }
+    { elementLabel: "Fire", elementColor: "purple" },
+    { elementLabel: "Radiation", elementColor: "orange" }
   ];
   
   // Add legend group
@@ -453,6 +454,7 @@ var arc = d3.arc()
   .startAngle(function(d) { return angleScale(d.data.TIMENODEVAL); })
   .endAngle(function(d) { return angleScale(d.data.TIMENODEVAL) + angleScale.bandwidth(); });
 
+
 // Add arcs to the chart
 svg.selectAll('g.radial-chart')
         .data(radstackedData)
@@ -464,6 +466,7 @@ svg.selectAll('g.radial-chart')
   .attr('d', function(d) {
     try {
         console.log(d);
+        
       return arc(d);
     } catch (error) {
       console.error("Error generating arc:", error);
@@ -475,8 +478,39 @@ svg.selectAll('g.radial-chart')
   .attr('fill', function(d, i) { return d[0] === 0 ? 'orange' : 'purple'; })
   .attr('transform', `translate(${chart3width / 2}, ${chart3height / 2})`)
   .append("title")
-  .text(d => d.data.TIMENODEVAL);
+  .text(d => "Time Segment: " + d.data.TIMENODEVAL + "\n" + "Incident Type: " + arccounterIncidentType() + "\n" + "Incident Count: " + findIncidentCount(d.data));
 
+}
+
+function arccounterIncidentType(){
+    if(arccounter < 10){
+        arccounter++;
+        return "RADIATION";
+    }
+    else if(arccounter >= 10 && arccounter < 20){
+        arccounter++;
+        return "FIRE";
+
+    }
+    else{
+        arccounter++;
+        return "FIRE";
+    }
+}
+
+function findIncidentCount(incdata){
+    var inccountstring = "undefined";
+    if(arccounter < 10){
+     inccountstring = incdata.RADIATIONVAL.toString();
+    }
+    else if(arccounter >= 10 && arccounter < 20){
+        inccountstring = incdata.FIREVAL.toString();
+
+    }
+    else{
+        inccountstring = incdata.FIREVAL.toString();
+    }
+    return inccountstring;
 }
 
 function handleLineChart(regionName, check){
