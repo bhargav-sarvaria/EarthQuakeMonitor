@@ -12,7 +12,6 @@ const MAP_COLOR_SCHEME = ["#4e79a7", "#f28e2c", "#e15759", "#59a14f", "#76b7b2",
 var incidentlocationwise= [];
 var timearray = [new Date('04/06/2020'), new Date('04/06/2020 06:00:00 AM'), new Date('04/06/2020 06:00:00 PM'), new Date('04/07/2020 06:00:00 AM'), new Date('04/07/2020 06:00:00 PM'), new Date('04/08/2020 06:00:00 AM'), new Date('04/08/2020 06:00:00 PM'), new Date('04/09/2020 06:00:00 AM'), new Date('04/09/2020 06:00:00 PM'), new Date('04/10/2020 06:00:00 AM'), new Date('04/10/2020 12:00:00 PM')];
 const radialstackcolorscheme = d3.scaleOrdinal(d3.schemeCategory10);
-var selectedregionarray = [];
 var typesofincidents = ["FIRE","RADIATION"];
 var incidentlocationwisefiltered = [
 
