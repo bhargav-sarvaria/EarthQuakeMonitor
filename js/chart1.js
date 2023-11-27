@@ -164,7 +164,7 @@ function createWordCloud(messages) {
                     
                     tooltip.html(tooltipHtml)
                     .style('left', (d3.event.pageX + 50) + 'px')
-                    .style('top', (d3.event.pageY -2000) + 'px');
+                    .style('top', (d3.event.pageY -1500) + 'px');
 
                     const closeBtn = document.getElementsByClassName('close-tooltip')[0];
                     if (closeBtn) {
@@ -189,7 +189,7 @@ function createWordCloud(messages) {
                             tooltip.html(expandedTooltipHtml)
                                 .style('opacity', 1)
                                 .style('left', (d3.event.pageX + 50) + 'px')
-                                .style('top', (d3.event.pageY -2000) + 'px');
+                                .style('top', (d3.event.pageY -1500) + 'px');
 
                             const newCloseBtn = document.getElementsByClassName('close-tooltip')[0];
                             if (newCloseBtn) {
