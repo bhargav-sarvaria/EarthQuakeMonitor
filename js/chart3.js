@@ -335,9 +335,91 @@ svgchart3.selectAll("text.label")
             });
     
     
-    
+    constructDayNightLabels();
+    constructRadialLabels();
 renderRadial();
 
+}
+
+function constructRadialLabels(){
+    // Define legend data
+const elementLegendData = [
+    { elementLabel: "Fire", elementColor: "orange" },
+    { elementLabel: "Radiation", elementColor: "purple" }
+  ];
+  
+  // Add legend group
+  const elementLegend = svgchart3.append("g")
+    .attr("class", "element-legend")
+    .attr("transform", "translate("+ chart3width * 0.8 +  "," + chart3height * 0.4 + ")"); // Adjust the translate values as needed
+  
+  // Add legend title
+  elementLegend.append("text")
+  .attr("x", -10)
+  .attr("y", -30)
+    .text("Element Type")
+    .attr("font-weight", "bold");
+  
+  // Add legend items
+  const elementLegendItems = elementLegend.selectAll(".element-legend-item")
+    .data(elementLegendData)
+    .enter().append("g")
+    .attr("class", "element-legend-item")
+    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+  
+  // Add colored rectangles
+  elementLegendItems.append("rect")
+  .attr("x", -10)
+    .attr("y", -8)
+    .attr("width", 16) // Adjust the width as needed
+    .attr("height", 16) // Adjust the height as needed
+    .style("fill", d => d.elementColor);
+  
+  // Add text labels
+  elementLegendItems.append("text")
+    .attr("x", 10) // Adjust the distance between rectangle and text
+    .attr("y", 4) // Adjust the vertical alignment
+    .text(d => d.elementLabel);
+}
+
+function constructDayNightLabels(){
+    // Define legend data
+const legendData = [
+    { label: "Day", color: "yellow" },
+    { label: "Night", color: "black" }
+  ];
+  
+  // Add legend group
+  const legend = svgchart3.append("g")
+    .attr("class", "legend")
+    .attr("transform", "translate("+ chart3width * 0.8 +  "," + chart3height * 0.2 + ")"); // Adjust the translate values as needed
+  
+  // Add legend title
+  legend.append("text")
+    .attr("x", -10)
+    .attr("y", -30)
+    .text("Time Node Color")
+    .attr("font-weight", "bold");
+  
+  // Add legend items
+  const legendItems = legend.selectAll(".legend-item")
+    .data(legendData)
+    .enter().append("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+  
+  // Add colored circles
+  legendItems.append("circle")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", 8) // Adjust the radius as needed
+    .style("fill", d => d.color);
+  
+  // Add text labels
+  legendItems.append("text")
+    .attr("x", 15) // Adjust the distance between circle and text
+    .attr("y", 4) // Adjust the vertical alignment
+    .text(d => d.label);
 }
 
 function renderRadial(){
