@@ -77,7 +77,7 @@ function createHeatmap(dataset) {
         // Filter data based on the time range
         const filteredAndTimeData = filteredData
         .filter(d => d.location !== '<Location with-held due to contract>')
-        .filter(d => d.location !== 'Wilson Forest')
+        // .filter(d => d.location !== 'Wilson Forest')
         .filter(d => {
             
             const messageTime = new Date(d.time);
