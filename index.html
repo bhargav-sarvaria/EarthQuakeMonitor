@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 title">Rumble Messages from St. Himark</div>
@@ -37,7 +37,7 @@
                 </div>
                 <div id="timeline-container"></div>
                 <div id="chart-3-container">
-                    
+
                 </div>
             </div>
             <div class="col-md-4">
@@ -45,7 +45,7 @@
                 <div class="chart" id="chart5-container">
                     <div class="chart5-dropdown">
                         <fieldset>
-                         
+
                         </fieldset>
                     </div>
                     <div id="chart5-linechart"></div>
@@ -62,7 +62,7 @@
         </div>
         <p id="tooltip-value" style="white-space: nowrap;"></p>
     </div>
-    
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -75,7 +75,7 @@
         // Global variables shared across all charts go here
         // Example: Date input slider
         let selectedregionarray = [];
-        const slider = createDoubleSlider();
+        const { slider, setDateRange } = createDoubleSlider();
         slider.addEventListener('change', function () {
             // Each chart subscribes to 'change' event on `slider`
             // after 'DOMContentLoaded' event, see chart4.js
@@ -83,7 +83,7 @@
         });
 
 
-        const LOCATIONS=  [
+        const LOCATIONS = [
             "Cheddarford",
             "Palace Hills",
             "Southwest",
@@ -103,7 +103,7 @@
             "Pepper Mill",
             "Wilson Forest",
             "Broadview"
-      ]
+        ]
 
 
         /**
@@ -123,7 +123,7 @@
 
     <script src="./js/chart1.js"></script>
     <script src="./js/chart2.js"></script>
-   
+
     <script src="./js/chart4.js"></script>
     <script src="./js/chart5.js"></script>
     <script src="./js/chart3.js"></script>

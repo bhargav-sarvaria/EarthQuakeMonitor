@@ -570,53 +570,21 @@ function handleRegionClick(){
         dehighlightAll();
     }
     updateRadialBars();
-    
+    svgchart3.node().value = selectedregionarray;
+    this.dispatchEvent(new CustomEvent('region-click', {
+        bubbles: true, 
+        cancelable: false, 
+        detail: {
+            selectedRegions: selectedregionarray
+        },
+    }));
 }
 
 function handleTimeNodeClick(){
-    
-
     var currtimenode = d3.select(this);
     var currstarttime = currtimenode.attr("nodestarttime");
     var currendtime = currtimenode.attr("nodeendtime");
-
-    slider.value = [new Date(currstarttime), new Date(currendtime)];
-    var minxcoordinate = xscaletimenode(new Date(currstarttime));
-    var maxxcoordinate = xscaletimenode(new Date(currendtime));
-
-    const timedraggableElements = d3.selectAll(".draggable").nodes();
-
-    // Select the first element
-    var leftslider = timedraggableElements[0]; 
-    var rightslider = timedraggableElements[1];
-
-    const circlesInLeftSlider = d3.select(leftslider).selectAll("circle");
-
-    // Set the cx attribute of all circles to a certain value, e.g., 50
-    circlesInLeftSlider.attr("cx", minxcoordinate);
-
-    const circlesInRightslider = d3.select(rightslider).selectAll("circle");
-
-    // Set the cx attribute of all circles to a certain value, e.g., 50
-    circlesInRightslider.attr("cx", maxxcoordinate);
-
-    const rectsInLeftSlider = d3.select(leftslider).selectAll("rect");
-    rectsInLeftSlider.attr("x", (minxcoordinate - (2 / 2)));
-
-    const rectsInRightSlider = d3.select(rightslider).selectAll("rect");
-    rectsInRightSlider.attr("x", (maxxcoordinate - (2 / 2)));
-
-    const svgElement = document.getElementById('dateSlider');
-
-// Create a new event
-const changeEvent = new Event('change', { bubbles: true });
-
-slider.dispatchEvent(changeEvent);
-// Dispatch the event on the SVG element
-svgElement.dispatchEvent(changeEvent);
-
-
-
+    setDateRange(new Date(currstarttime), new Date(currendtime));
 }
 
 function createIncidentData(){
