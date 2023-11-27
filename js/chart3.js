@@ -143,14 +143,15 @@ function updateMapColor(){
         let maxValue = -Infinity;
 
         for (const label in currrow) {
-            if (currrow[label] > maxValue && label != "total") {
+            if (currrow[label] > maxValue && label != "total" && RESOURCES.includes(label)) {
                 maxLabel = label;
                 maxValue = currrow[label];
             }
         }
-
+        var currregiontitle = currregion.select("title");
+        currregiontitle.text("Area Name: " + currregionname + "\n" + "Most Demanded Resource: " + (maxLabel != null ? maxLabel : ""));
         currregion.transition()
-        .duration(3000).style("fill", d => mapcolorscale(maxLabel));
+        .duration(3000).style("fill", d => resourceColor(maxLabel));
         
     });
 }
@@ -325,13 +326,13 @@ svgchart3.selectAll("text.label")
                 let maxValue = -Infinity;
 
                 for (const label in currrow) {
-                    if (currrow[label] > maxValue && label != "total") {
+                    if (currrow[label] > maxValue && label != "total" && RESOURCES.includes(label)) {
                         maxLabel = label;
                         maxValue = currrow[label];
                     }
                 }
 
-                currregion.style("fill", d => mapcolorscale(maxLabel));
+                currregion.style("fill", d => resourceColor(maxLabel));
                 currregiontitle.text("Area Name: " + currregionname + "\n" + "Most Demanded Resource: " + (maxLabel != null ? maxLabel : ""));
             });
     
