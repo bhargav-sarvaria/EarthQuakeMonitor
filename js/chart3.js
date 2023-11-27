@@ -545,12 +545,13 @@ function handleRegionClick(){
     if(selectedregionarray.includes(currregionname)){
         selectedregionarray = selectedregionarray.filter(item => item !== currregionname);
         currregion.style("opacity", "1.0");
-        
+        currregion.attr("stroke", "black");
         handleLineChart(currregionname, false);
     }
     else{
         selectedregionarray.push(currregionname);
         currregion.style("opacity", "0.5");
+        currregion.attr("stroke", "white");
         handleLineChart(currregionname, true);
     }
 
