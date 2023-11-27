@@ -171,12 +171,6 @@ uniqueLocations.forEach(location => {
 
 
 const heatmapData = Object.values(uniqueData);
-// console.log('Unique Locations:', uniqueLocations);
-// console.log('Unique Intervals:', uniqueIntervals);
-// console.log(heatmapData);
-
-// Rest of your code remains unchanged
-
 svg.selectAll(".old-x-axis").remove();
 
 var x = d3.scaleBand()
@@ -218,10 +212,7 @@ var myColor = d3.scaleQuantile()
 .domain([0, maxEventCount/2, maxEventCount])
 .range(colors);
 
-
-
 svg.selectAll(".legend").remove();
-
 
 // Define the dimensions of the legend bar
 const legendHeight = 500; // Height of the vertical legend
@@ -230,7 +221,7 @@ const legendWidth = 20;  // Width of the vertical legend
 // Append a legend group to your SVG
 const legend2 = svg.append("g")
   .attr("class", "legend")
-  .attr("transform", "translate(1090," + (height - legendHeight - 250) + ")"); // Adjust for legend height and position
+  .attr("transform", "translate(980," + (height - legendHeight - 250) + ")"); // Adjust for legend height and position
 
 // Create a vertical gradient for the legend
 const linearGradient = legend2.append("defs")
@@ -273,31 +264,6 @@ legend2.append("text")
   .style("font-size","30px")
   .style("font-weight", "bold") // Optionally, make the text bold
   .text("← More Incidents"); // Replace with your desired text
-
-
-// const legend = svg.append('g')
-// .attr('transform', `translate(10, ${uniqueLocations.length * height + 2 * 4})`)
-
-
-
-// const categoriesCount = uniqueLocations.length;
-
-// const categories = [...Array(categoriesCount)].map((_, i) => {
-//    const upperBound = maxValue / categoriesCount * (i + 1);
-//    const lowerBound = maxValue / categoriesCount * i;
-
-//    return {
-//      upperBound,
-//      lowerBound,
-//      color: d3.interpolateBuGn(upperBound / maxValue)
-//    };
-//  });
-
-
-
-
-
-
 
 // Create tooltip div
 var tooltip = d3.select("#chart-2")
