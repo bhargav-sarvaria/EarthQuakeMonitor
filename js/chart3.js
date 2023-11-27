@@ -9,6 +9,7 @@ var mapRadius;
 var chart3width;
 var chart3height;
 var arccounter = 0;
+var radiusScale;
 const MAP_COLOR_SCHEME = ["#4e79a7", "#f28e2c", "#e15759", "#59a14f", "#76b7b2", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"]
 var incidentlocationwise= [];
 var timearray = [new Date('04/06/2020'), new Date('04/06/2020 06:00:00 AM'), new Date('04/06/2020 06:00:00 PM'), new Date('04/07/2020 06:00:00 AM'), new Date('04/07/2020 06:00:00 PM'), new Date('04/08/2020 06:00:00 AM'), new Date('04/08/2020 06:00:00 PM'), new Date('04/09/2020 06:00:00 AM'), new Date('04/09/2020 06:00:00 PM'), new Date('04/10/2020 06:00:00 AM'), new Date('04/10/2020 12:00:00 PM')];
@@ -359,7 +360,7 @@ const elementLegendData = [
   elementLegend.append("text")
   .attr("x", -10)
   .attr("y", -30)
-    .text("Element Type")
+    .text("Incident Type")
     .attr("font-weight", "bold");
   
   // Add legend items
@@ -440,7 +441,7 @@ var angleScale = d3.scaleBand()
   .domain(incidentlocationwisefiltered.map(function(d) { return d.TIMENODEVAL; }))
   .range([0, 2 * Math.PI]);
 
-var radiusScale = d3.scaleLinear()
+ radiusScale = d3.scaleLinear()
   .domain([0, d3.max(incidentlocationwisefiltered, function(d) { return d.FIREVAL + d.RADIATIONVAL; })])
   .range([innerRadius, outerRadius]);
 
@@ -481,6 +482,8 @@ svg.selectAll('g.radial-chart')
   .append("title")
   .text(d => "Time Segment: " + d.data.TIMENODEVAL + "\n" + "Incident Type: " + arccounterIncidentType() + "\n" + "Incident Count: " + findIncidentCount(d.data));
 
+
+  arccounter = 0;
 }
 
 function arccounterIncidentType(){
@@ -502,14 +505,14 @@ function arccounterIncidentType(){
 function findIncidentCount(incdata){
     var inccountstring = "undefined";
     if(arccounter < 10){
-     inccountstring = incdata.RADIATIONVAL.toString();
+     inccountstring = (incdata.RADIATIONVAL - 1).toString();
     }
     else if(arccounter >= 10 && arccounter < 20){
-        inccountstring = incdata.FIREVAL.toString();
+        inccountstring = (incdata.FIREVAL - 1).toString();
 
     }
     else{
-        inccountstring = incdata.FIREVAL.toString();
+        inccountstring = (incdata.FIREVAL - 1).toString();
     }
     return inccountstring;
 }
@@ -559,7 +562,7 @@ function handleRegionClick(){
     if(selectedregionarray.length == 0){
         handleLineChart("", true);
     }
-
+    updateRadialBars();
     
 }
 
@@ -610,10 +613,16 @@ svgElement.dispatchEvent(changeEvent);
 }
 
 function createIncidentData(){
+
+    for(const inctimenode of incidentlocationwisefiltered){
+        inctimenode.FIREVAL = 1;
+        inctimenode.RADIATIONVAL = 1;
+    }
+
     for(const message of cleanedhimarkdata){
         // Filter based on date slider value
 
-        if(timearray[0] <= message.time && message.time < timearray[1]){
+        if(timearray[0] <= message.time && message.time < timearray[1] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -631,7 +640,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[1] <= message.time && message.time < timearray[2]){
+        else if(timearray[1] <= message.time && message.time < timearray[2] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -649,7 +658,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[2] <= message.time && message.time < timearray[3]){
+        else if(timearray[2] <= message.time && message.time < timearray[3] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -667,7 +676,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[3] <= message.time && message.time < timearray[4]){
+        else if(timearray[3] <= message.time && message.time < timearray[4] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -685,7 +694,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[4] <= message.time && message.time < timearray[5]){
+        else if(timearray[4] <= message.time && message.time < timearray[5] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -703,7 +712,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[5] <= message.time && message.time < timearray[6]){
+        else if(timearray[5] <= message.time && message.time < timearray[6] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -721,7 +730,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[6] <= message.time && message.time < timearray[7]){
+        else if(timearray[6] <= message.time && message.time < timearray[7] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -739,7 +748,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[7] <= message.time && message.time < timearray[8]){
+        else if(timearray[7] <= message.time && message.time < timearray[8] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -757,7 +766,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[8] <= message.time && message.time < timearray[9]){
+        else if(timearray[8] <= message.time && message.time < timearray[9] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -775,7 +784,7 @@ function createIncidentData(){
                 }
             }
         }
-        else if(timearray[9] <= message.time && message.time < timearray[10]){
+        else if(timearray[9] <= message.time && message.time < timearray[10] && (selectedregionarray.length == 0 || selectedregionarray.includes(message.location))){
             if(message.events != null){
                 for(const event of message.events){
                     if(event == "FIRE"){
@@ -797,3 +806,57 @@ function createIncidentData(){
     }
 }
 
+function updateRadialBars(){
+    createIncidentData();
+
+    var innerRadius = mapRadius *1.1;
+    var outerRadius = mapRadius * 1.4;
+
+    // Create an SVG container in the body of the document
+    var svg = d3.select('#chart-3').select('svg');
+    // Create scales
+    var angleScale = d3.scaleBand()
+    .domain(incidentlocationwisefiltered.map(function(d) { return d.TIMENODEVAL; }))
+    .range([0, 2 * Math.PI]);
+
+    radiusScale = d3.scaleLinear()
+  .domain([0, d3.max(incidentlocationwisefiltered, function(d) { return d.FIREVAL + d.RADIATIONVAL; })])
+  .range([innerRadius, outerRadius]);
+    // Stack the data
+    var radstackedData = d3.stack()
+    .keys(['RADIATIONVAL','FIREVAL'])(incidentlocationwisefiltered);
+
+    // Create arcs
+    var arc = d3.arc()
+    .innerRadius(function(d) { return radiusScale(d[0]); })
+    .outerRadius(function(d) { return radiusScale(d[1]); })
+    .startAngle(function(d) { return angleScale(d.data.TIMENODEVAL); })
+    .endAngle(function(d) { return angleScale(d.data.TIMENODEVAL) + angleScale.bandwidth(); });
+
+
+    // Select all existing groups
+    var arcs = svg.selectAll('g.radial-chart')
+    .data(radstackedData);
+
+    // Update existing groups
+    arcs.selectAll('path')
+    .data(function(d) { return d; })
+    .transition() // Add a transition
+    .duration(3000)
+    .attr('d', function(d) {
+        try {
+            console.log(d);
+            return arc(d);
+        } catch (error) {
+            console.error("Error generating arc:", error);
+            // Handle the error here, e.g., by providing a fallback or logging the error.
+            // For now, returning an empty string to skip rendering the arc.
+            return "";
+        }
+    })
+    .attr('fill', function(d, i) { return d[0] === 0 ? 'orange' : 'purple'; })
+    .select("title")
+    .text(d => "Time Segment: " + d.data.TIMENODEVAL + "\n" + "Incident Type: " + arccounterIncidentType() + "\n" + "Incident Count: " + findIncidentCount(d.data));
+
+    arccounter = 0;
+}
