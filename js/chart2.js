@@ -125,6 +125,8 @@ const uniqueData = {};
 const uniqueLocations = [];
 const uniqueIntervals = Array.from({ length: numberOfIntervals }, (_, i) => i);
 
+const uniqueIntervalsTime = new Array(numberOfIntervals)
+
 // Iterate through each location in locationData
 Object.keys(locationData).forEach(location => {
     const locationInfo = locationData[location];
@@ -133,6 +135,11 @@ Object.keys(locationData).forEach(location => {
     locationInfo.time.forEach(time => {
         // Calculate the interval index for the given time
         const intervalIndex = Math.floor((time - startTime) / intervalWidth);
+
+        if(uniqueIntervalsTime[intervalIndex] == undefined){
+            console.log(time)
+            uniqueIntervalsTime[intervalIndex] = time;
+        }
 
         // Create a unique key for each combination of location and interval
         const key = location + '-' + intervalIndex;
@@ -157,6 +164,8 @@ Object.keys(locationData).forEach(location => {
 });
 
 
+console.log(uniqueIntervalsTime)
+
 uniqueLocations.forEach(location => {
     uniqueIntervals.forEach(intervalIndex => {
         const key = location + '-' + intervalIndex;
@@ -178,18 +187,47 @@ console.log(uniqueData)
 const heatmapData = Object.values(uniqueData);
 heatSVG.selectAll(".old-x-axis").remove();
 
+
+// Calculate interval start times
+const intervalStartTimes = Array.from({ length: numberOfIntervals }, (_, i) => new Date(startTime + i * intervalWidth));
+
+// Format time for display
+function formatTime(date) {
+  // Example: format as 'HH:mm:ss'. You can adjust the format as needed
+  return  d3.timeFormat("%B %d %I:%M %p")(date);
+}
+
+
+
+
 var x = d3.scaleBand()
     .range([0, width / 1.5])
     .domain(uniqueIntervals)
     .padding(0.01);
+
+
+
+uniqueIntervalsTime.push(endTime);
+    
 heatSVG.append("g")
     .attr("class", "old-x-axis") 
     .attr("transform", "translate(110," + (height / 1.5 + 105) + ")")
-    .call(d3.axisBottom(x))
+    .call(d3.axisBottom(x)
+    .tickValues(uniqueIntervals) // Set the tick values to match your domain
+    .tickFormat(function(d, i) {
+        console.log(d, i)
+        // Use customTickLabels for formatting
+        return formatTime(uniqueIntervalsTime[d]);
+    }))
     .selectAll("text")
     .style("text-anchor", "end") // Align text to the end of the tick
     .attr("dx", "-.8em") // Adjust text position
-    .attr("dy", ".15em");
+    .attr("dy", ".15em")
+    .style("font-size","15px")
+    .attr("transform", "rotate(-45)");
+
+
+    
 
 // Build Y scales and axis:
 heatSVG.selectAll(".old-y-axis").remove();
@@ -206,7 +244,8 @@ heatSVG.append("g")
     .selectAll("text")
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
-    .attr("dy", ".15em");
+    .attr("dy", ".15em")
+    .style("font-size","15px");
 
 const maxEventCount = d3.max(heatmapData, d => d.eventCount);
 const minEventCount = 1;
@@ -349,39 +388,22 @@ function mouseleave(d) {
 
 function highlightRow(selectedLocation) {
     isHighlighted = true;
-
-    // Remove highlighting from all rows
-    // heatSVG.selectAll(".heatmap-rect").classed("highlighted-row", false);
-  
     heatSVG.selectAll(".heatmap-rect:not(.highlighted-row)")
     .style("opacity", 0.2);
-
-    // Highlight the selected row by setting opacity to full
-    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
-  .style("opacity", 1);
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-')).style("opacity", 1);
     // Highlight the selected row
-    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
-      .classed("highlighted-row", true);
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-')).classed("highlighted-row", true);
   }
 
 
 function dehighlightAll(){
     isHighlighted = false;
     heatSVG.selectAll(".heatmap-rect").classed("highlighted-row", false);
-    heatSVG.selectAll(".heatmap-rect")
-    .style("opacity", 1);
+    heatSVG.selectAll(".heatmap-rect").style("opacity", 1);
 }
 
 function dehighlightRow(selectedLocation) {
-    // Remove highlighting from all rows
-    // heatSVG.selectAll(".heatmap-rect").classed("highlighted-row", false);
-    // heatSVG.selectAll(".heatmap-rect")
-    // .style("opacity", 1);
-
     // Highlight the selected row
-    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
-      .classed("highlighted-row", false);
-    
-      heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-'))
-  .style("opacity", 0.2);
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-')).classed("highlighted-row", false);
+    heatSVG.selectAll(".location-" + selectedLocation.replace(/\s+/g, '-')).style("opacity", 0.2);
 }
