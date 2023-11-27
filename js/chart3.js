@@ -567,7 +567,14 @@ function handleRegionClick(){
         handleLineChart("", true);
     }
     updateRadialBars();
-    
+    svgchart3.node().value = selectedregionarray;
+    this.dispatchEvent(new CustomEvent('region-click', {
+        bubbles: true, 
+        cancelable: false, 
+        detail: {
+            selectedRegions: selectedregionarray
+        },
+    }));
 }
 
 function handleTimeNodeClick(){

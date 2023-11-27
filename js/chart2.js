@@ -20,7 +20,7 @@ function createHeatmap(dataset) {
     }
 
     // Extract unique incidents for dropdown options
-    const incidents = ["RADIATION","EARTHQUAKE", "DEATH", "POWER", "FIRE", "GAS"];
+    const incidents = ["RADIATION","EARTHQUAKE", "DEATH", "POWER", "FIRE", "GAS", "FLOOD"];
 
     // Create dropdown options
     const dropdown = svg.append("foreignObject")

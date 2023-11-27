@@ -5,9 +5,12 @@
 const countEventsByLocation = (data, slider) => {
     const eventCountsByLocation = {};
     const dateExtent = slider.value;
+    const mapSvg = document.getElementById('mapsvg');
+    const selectedRegions = mapSvg?.value;
     for(const message of data){
-        // Filter based on date slider value
-        if(!(dateExtent[0] <= message.time && message.time <= dateExtent[1])){
+        // Filter based on user input
+        if(!(dateExtent[0] <= message.time && message.time <= dateExtent[1])
+            || (selectedRegions?.length > 0 && !selectedRegions.includes(message.location))){
             continue;
         }
         const locationEventCounts = eventCountsByLocation[message.location] ??= {};
@@ -225,7 +228,7 @@ const createStackedBarChart = (data) => {
 window.addEventListener('DOMContentLoaded', async () => {
     const messages = await d3.csv('../cleaned_json.csv');
     const filtered = [];
-    const invalidLocations = ['Wilson Forest', 'UNKNOWN', '<Location with-held due to contract>']
+    const invalidLocations = ['UNKNOWN', '<Location with-held due to contract>']
     for(const message of messages){
         if(invalidLocations.includes(message.location)){
             continue;
@@ -245,4 +248,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     // const slider = document.getElementById('dateSlider');
     const updateChart = createStackedBarChart(filtered);
     slider.addEventListener('change', updateChart);
+    window.addEventListener('region-click', updateChart);
 }, {once: true});
