@@ -235,7 +235,8 @@ svgchart3.selectAll("text.label")
 .style("text-anchor", "middle") // Center the text
 .style("font-size", "10px") // Adjust font size as needed
 .style("font-weight", "bold") // Set font weight to bold if needed
-.style("fill", "white"); // Set text color
+.style("fill", "white")
+.style("pointer-events", "none"); // Set text color
 
 
      mapRadius = (chart3height / 4)* 1.4;
@@ -306,7 +307,8 @@ svgchart3.selectAll("text.label")
     .attr("dy", ".35em") // Adjust the vertical position as needed
     .style("text-anchor", "middle")
     .style("font-weight", "bold")
-    .style("fill", d => (d.nodecolor === "black") ? "white" : "black") // Adjust the color as needed
+    .style("fill", d => (d.nodecolor === "black") ? "white" : "black")
+    .style("pointer-events", "none") // Adjust the color as needed
     .text(function(d) { return parseInt((d.nodename).match(/\d+/)[0]); });
 
 
@@ -549,12 +551,14 @@ function handleRegionClick(){
         selectedregionarray = selectedregionarray.filter(item => item !== currregionname);
         currregion.style("opacity", "1.0");
         currregion.attr("stroke", "black");
+        currregion.attr("stroke-width", 1)
         handleLineChart(currregionname, false);
     }
     else{
         selectedregionarray.push(currregionname);
         currregion.style("opacity", "0.5");
         currregion.attr("stroke", "white");
+        currregion.attr("stroke-width", 2)
         handleLineChart(currregionname, true);
     }
 
@@ -819,9 +823,9 @@ function updateRadialBars(){
     .domain(incidentlocationwisefiltered.map(function(d) { return d.TIMENODEVAL; }))
     .range([0, 2 * Math.PI]);
 
-    radiusScale = d3.scaleLinear()
-  .domain([0, d3.max(incidentlocationwisefiltered, function(d) { return d.FIREVAL + d.RADIATIONVAL; })])
-  .range([innerRadius, outerRadius]);
+//     radiusScale = d3.scaleLinear()
+//   .domain([0, d3.max(incidentlocationwisefiltered, function(d) { return d.FIREVAL + d.RADIATIONVAL; })])
+//   .range([innerRadius, outerRadius]);
     // Stack the data
     var radstackedData = d3.stack()
     .keys(['RADIATIONVAL','FIREVAL'])(incidentlocationwisefiltered);
