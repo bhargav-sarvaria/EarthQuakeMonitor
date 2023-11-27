@@ -15,12 +15,16 @@
 </head>
 
 <body>
+    
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 title">Rumble Messages from St. Himark</div>
         </div>
         <div class="row">
             <div class="col-12 p-0" id="dateSliderWrapper"></div>
+        </div>
+        <div style="width: 100vw; height: 100vh; background-color: #abcdef;">
+            <div class="chart w-100 h-100" id="chart-3"></div>
         </div>
         <div class="row" id="main-container">
             <div class="col-md-4">
@@ -33,7 +37,7 @@
                 </div>
                 <div id="timeline-container"></div>
                 <div id="chart-3-container">
-                    <div class="chart w-100" id="chart-3">Chart 3 Placeholder</div>
+                    
                 </div>
             </div>
             <div class="col-md-4">
@@ -58,7 +62,7 @@
         </div>
         <p id="tooltip-value" style="white-space: nowrap;"></p>
     </div>
-
+    
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -70,13 +74,37 @@
     <script>
         // Global variables shared across all charts go here
         // Example: Date input slider
-
+        let selectedregionarray = [];
         const slider = createDoubleSlider();
         slider.addEventListener('change', function () {
             // Each chart subscribes to 'change' event on `slider`
             // after 'DOMContentLoaded' event, see chart4.js
             console.log(`Slider value: ${slider.value}`);
         });
+
+
+        const LOCATIONS=  [
+            "Cheddarford",
+            "Palace Hills",
+            "Southwest",
+            "Northwest",
+            "Old Town",
+            "Weston",
+            "Downtown",
+            "Southton",
+            "West Parton",
+            "Easton",
+            "Safe Town",
+            "East Parton",
+            "Oak Willow",
+            "Chapparal",
+            "Scenic Vista",
+            "Terrapin Springs",
+            "Pepper Mill",
+            "Wilson Forest",
+            "Broadview"
+      ]
+
 
         /**
          * Fired when user hovers over a resource glyph (chart 4 bar segments)
@@ -95,9 +123,10 @@
 
     <script src="./js/chart1.js"></script>
     <script src="./js/chart2.js"></script>
-    <script src="./js/chart3.js"></script>
+   
     <script src="./js/chart4.js"></script>
     <script src="./js/chart5.js"></script>
+    <script src="./js/chart3.js"></script>
 </body>
 
 </html>

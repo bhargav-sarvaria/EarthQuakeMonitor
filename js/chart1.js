@@ -1,3 +1,5 @@
+let updateWordCloud = null;
+
 const stopWords = new Set([
     'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", 
     "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 
@@ -77,7 +79,7 @@ function createWordCloud(messages) {
         const [startTime, endTime] = slider.value;
         messages_filtered = allData.filter(d => {
             const messageTime = new Date(d.time);
-            return messageTime >= startTime && messageTime <= endTime;
+            return (messageTime >= startTime && messageTime <= endTime) && (selectedregionarray.length == 0 || selectedregionarray.includes(d.location));
         });
 
         let wordFrequencies = "";
@@ -213,7 +215,7 @@ function createWordCloud(messages) {
 
 window.addEventListener('DOMContentLoaded', async () => {
     d3.csv('words_essential_2.csv').then(data => {
-        const updateWordCloud = createWordCloud(data);
+        updateWordCloud = createWordCloud(data);
         slider.addEventListener('change', updateWordCloud);
     });    
 });
