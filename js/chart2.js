@@ -26,30 +26,52 @@ function createHeatmap(dataset) {
     // Extract unique incidents for dropdown options
     const incidents = ["RADIATION","EARTHQUAKE", "DEATH", "POWER", "FIRE", "GAS", "FLOOD"];
 
-    // Create dropdown options
-    const dropdown = heatSVG.append("foreignObject")
-        .attr("width", 750)
-        .attr("height", 30)
-        .append("xhtml:body")
-        .html('<select id="incidentDropdown" style="width:100%;height:100%;"></select>');
+// Create a container for the dropdown and label
+const dropdownContainer = heatSVG.append("foreignObject")
+    .attr("x", 200)
+    .attr("width", 750)
+    .attr("height", 60) // Adjusted height to accommodate label and dropdown
+    .append("xhtml:div")
+    .attr("class", "dropdown-container");
 
-    // Append options to the dropdown
-    dropdown.select("#incidentDropdown")
-        .selectAll("option")
-        .data(incidents)
-        .enter()
-        .append("option")
-        .text(d => d)
-        .attr("value", d => d);
+// Append label to the container
+dropdownContainer.append("xhtml:label")
+    .attr("for", "incidentDropdown")
+    .style("display", "block")
+    .style("margin-bottom", "5px")
+    .text("Select Incident Type:");
+
+// Append dropdown to the container
+const dropdown = dropdownContainer.append("xhtml:select")
+    .attr("id", "incidentDropdown")
+    .style("width", "100%")
+    .style("height", "30px");
+
+// Populate dropdown options using D3
+dropdown.selectAll("option")
+    .data(incidents) // Assuming 'incidents' is your data array
+    .enter()
+    .append("xhtml:option")
+    .text(d => d)
+    .attr("value", d => d);
 
     // Set initial incident
     let selectedIncident = incidents[0];
 
-    // Add event listener to update selectedIncident on dropdown change
-    dropdown.select("#incidentDropdown").on("change", function () {
-        selectedIncident = this.value;
-        updateHeatmap();
-    });
+    // // Add event listener to update selectedIncident on dropdown change
+    // dropdown.select("#incidentDropdown").on("change", function () {
+    //     selectedIncident = this.value;
+    //     updateHeatmap();
+    // });
+
+    // Handle change event
+dropdown.on("change", function(event) {
+    const selectedValue = d3.select(this).node().value;
+    // Add your code to handle the change event
+    selectedIncident = this.value;
+    updateHeatmap();
+
+});
 
     const slider = document.getElementById('dateSlider');
     slider.addEventListener('input', updateHeatmap());
@@ -211,7 +233,7 @@ uniqueIntervalsTime.push(endTime);
     
 heatSVG.append("g")
     .attr("class", "old-x-axis") 
-    .attr("transform", "translate(110," + (height / 1.5 + 105) + ")")
+    .attr("transform", "translate(150," + (height / 1.5 + 105) + ")")
     .call(d3.axisBottom(x)
     .tickValues(uniqueIntervals) // Set the tick values to match your domain
     .tickFormat(function(d, i) {
@@ -224,7 +246,8 @@ heatSVG.append("g")
     .attr("dx", "-.8em") // Adjust text position
     .attr("dy", ".15em")
     .style("font-size","15px")
-    .attr("transform", "rotate(-45)");
+    .attr("transform", "rotate(-45)")
+    
 
 
     
@@ -239,7 +262,7 @@ var y = d3.scaleBand()
     .padding(0.01);
 heatSVG.append("g")
     .attr("class", "old-y-axis") // Add a class to identify the old y-axis
-    .attr("transform", "translate(110, 100)")
+    .attr("transform", "translate(150, 100)")
     .call(d3.axisLeft(y))
     .selectAll("text")
     .style("text-anchor", "end")
@@ -265,7 +288,7 @@ const legendWidth = 20;  // Width of the vertical legend
 // Append a legend group to your SVG
 const legend2 = heatSVG.append("g")
   .attr("class", "legend")
-  .attr("transform", "translate(980," + (height - legendHeight - 250) + ")"); // Adjust for legend height and position
+  .attr("transform", "translate(1020," + (height - legendHeight - 250) + ")"); // Adjust for legend height and position
 
 // Create a vertical gradient for the legend
 const linearGradient = legend2.append("defs")
@@ -332,7 +355,7 @@ heatSVG.selectAll(".heatmap-rect")
     // .attr("class", "heatmap-rect")
     .attr("class", function(d) { return "heatmap-rect location-" + d.location.replace(/\s+/g, '-'); }) // Add unique class based on location
 
-    .attr("x", function (d) { return x(d.interval)+110; })
+    .attr("x", function (d) { return x(d.interval)+150; })
     .attr("y", function (d) { return y(d.location)+100; })
     .attr("rx", 4)
     .attr("ry", 4)
@@ -342,6 +365,26 @@ heatSVG.selectAll(".heatmap-rect")
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave);
+
+
+    // Append X axis label
+    heatSVG.append('text')
+        .attr('class', 'x-axis-label')
+        .attr('text-anchor', 'middle')
+        .attr('x',width/2-100)
+        .attr('y', height -20) // Adjust position as needed
+        .style("font-size","30px")
+        .text('Time');
+    // Append Y axis label
+    heatSVG.append('text')
+        .attr('class', 'y-axis-label')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -height / 2)
+        .attr('y',  30) // Adjust position as needed
+        .style("font-size","30px")
+        .text(`Location`);
+    
 
     if(isHighlighted){
         selectedregionarray.forEach(location => highlightRow(location))
@@ -380,6 +423,9 @@ function mouseleave(d) {
 
 }
         }
+
+
+    
    
     return updateHeatmap
 } 
