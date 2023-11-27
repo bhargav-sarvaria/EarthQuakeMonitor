@@ -221,7 +221,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             const locations = Object.keys(data[0]).filter(key => {
                 return key !== "time_rounded";
             }).sort();
-            locations.forEach(location => addOption(location, location == 'Downtown'));
+            locations.forEach(location => addOption(location, true));
             Object.keys(YAXIS).forEach(cnt => addYAxisOption(cnt, cnt == 'Mssg Count'));
 
             var details = document.querySelectorAll('fieldset details');

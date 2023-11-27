@@ -357,19 +357,51 @@ svg.selectAll('g.radial-chart')
 
 }
 
+function handleLineChart(regionName, check){
+
+    if(regionName===""){
+        LOCATIONS.forEach(location =>{
+            var checkboxToCheck = document.querySelector(`input[value="${location}"]`);
+            checkboxToCheck.checked = check;
+        } );
+    }else{
+        var checkboxToCheck = document.querySelector(`input[value="${regionName}"]`);
+        checkboxToCheck.checked = check;
+    }
+
+    const selectedOptions = getSelectedLocations();
+    console.log(selectedOptions);
+    createLineChart(selectedOptions['selectedLocations'], selectedOptions['selectedMeasures'][0]);
+}
+
 function handleRegionClick(){
+
+    if(selectedregionarray.length == 0){
+    LOCATIONS.forEach(location =>{
+        console.log(`input[value="${location}"]`)
+        var checkboxToCheck = document.querySelector(`input[value="${location}"]`);
+        checkboxToCheck.checked = false;
+    } );}
+
     var currregion = d3.select(this);
     var currregionname = currregion.attr("regionname");
     if(selectedregionarray.includes(currregionname)){
         selectedregionarray = selectedregionarray.filter(item => item !== currregionname);
         currregion.style("opacity", "0.5");
+        
+        handleLineChart(currregionname, false);
     }
     else{
         selectedregionarray.push(currregionname);
         currregion.style("opacity", "1.0");
+        handleLineChart(currregionname, true);
     }
 
     updateWordCloud();
+    if(selectedregionarray.length == 0){
+        handleLineChart("", true);
+    }
+
     
 }
 
