@@ -34,8 +34,10 @@ text {
   justify-content: center;
   align-items: center;
   text-align: center;
-
+/* 
   background-color: rgb(67, 55, 55);
+   */
+   background-color: rgb(90, 79, 79);
   border-radius: 10px;
   box-shadow: 4px 3px 10px 4px rgb(47, 47, 47);
 }
