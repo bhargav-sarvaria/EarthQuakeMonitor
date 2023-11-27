@@ -212,9 +212,92 @@ svg.append("g")
 const maxEventCount = d3.max(heatmapData, d => d.eventCount);
 const minEventCount = 1;
 
-var myColor = d3.scaleSequential()
-.interpolator(d3.interpolateInferno)
-.domain([minEventCount, maxEventCount]);
+colors = ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58'];
+
+var myColor = d3.scaleQuantile()
+.domain([0, maxEventCount/2, maxEventCount])
+.range(colors);
+
+
+
+svg.selectAll(".legend").remove();
+
+
+// Define the dimensions of the legend bar
+const legendHeight = 500; // Height of the vertical legend
+const legendWidth = 20;  // Width of the vertical legend
+
+// Append a legend group to your SVG
+const legend2 = svg.append("g")
+  .attr("class", "legend")
+  .attr("transform", "translate(1090," + (height - legendHeight - 250) + ")"); // Adjust for legend height and position
+
+// Create a vertical gradient for the legend
+const linearGradient = legend2.append("defs")
+  .append("linearGradient")
+  .attr("id", "vertical-linear-gradient")
+  .attr("x1", "0%")   // Gradient goes from the top to the bottom
+  .attr("y1", "0%")
+  .attr("x2", "0%")
+  .attr("y2", "100%");
+
+// Define the gradient stops
+const colorRange = [minEventCount, maxEventCount];
+linearGradient.selectAll("stop")
+  .data(colorRange.map((t, i, n) => ({ offset: `${100*i/(n.length-1)}%`, color: myColor(t) })))
+  .enter().append("stop")
+  .attr("offset", d => d.offset)
+  .attr("stop-color", d => d.color);
+
+// Draw the rectangle and fill with the vertical gradient
+legend2.append("rect")
+  .attr("width", legendWidth)
+  .attr("height", legendHeight)
+  .style("fill", "url(#vertical-linear-gradient)");
+
+// Add min and max value labels next to the legend
+legend2.selectAll(".legend-value-text")
+  .data(colorRange)
+  .enter().append("text")
+  .attr("class", "legend-value-text")
+  .attr("x", legendWidth + 5) // Position labels to the right of the legend bar
+  .attr("y", (d, i) => i * legendHeight) // Vertical position based on the height of the legend
+  .attr("alignment-baseline", (d, i) => i === 0 ? "hanging" : "baseline") // Align text based on position
+  .text(d => d)
+  .style("font-size","30px");
+
+// Add a label to explain the color scale, rotated for the vertical legend
+legend2.append("text")
+  .attr("transform", "translate(" + (legendWidth + 40) + "," + (legendHeight / 2) + ") rotate(-90)") // Position and rotate text
+  .attr("text-anchor", "middle") // Center the text
+  .style("font-size","30px")
+  .style("font-weight", "bold") // Optionally, make the text bold
+  .text("← More Incidents"); // Replace with your desired text
+
+
+// const legend = svg.append('g')
+// .attr('transform', `translate(10, ${uniqueLocations.length * height + 2 * 4})`)
+
+
+
+// const categoriesCount = uniqueLocations.length;
+
+// const categories = [...Array(categoriesCount)].map((_, i) => {
+//    const upperBound = maxValue / categoriesCount * (i + 1);
+//    const lowerBound = maxValue / categoriesCount * i;
+
+//    return {
+//      upperBound,
+//      lowerBound,
+//      color: d3.interpolateBuGn(upperBound / maxValue)
+//    };
+//  });
+
+
+
+
+
+
 
 // Create tooltip div
 var tooltip = d3.select("#chart-2")
