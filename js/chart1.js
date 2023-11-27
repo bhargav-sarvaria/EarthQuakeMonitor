@@ -79,7 +79,7 @@ function createWordCloud(messages) {
         const [startTime, endTime] = slider.value;
         messages_filtered = allData.filter(d => {
             const messageTime = new Date(d.time);
-            return (messageTime >= startTime && messageTime <= endTime) && (selectedRegionsarray.empty() || selectedRegionsarray.includes(d.location));
+            return (messageTime >= startTime && messageTime <= endTime) && (selectedregionarray.length == 0 || selectedregionarray.includes(d.location));
         });
 
         let wordFrequencies = "";

@@ -295,59 +295,7 @@ var centerCoordinates = [
             });
     
     
-    //Radial Stacked bar chart begins
-//     // Extract keys (FIREVAL and RADIATIONVAL) for stacking
-// var keys = ['FIREVAL', 'RADIATIONVAL'];
-
-// // Create a stack generator
-// var stack = d3.stack().keys(keys);
-
-// // Stack the data
-// var stackedData = stack(incidentlocationwisefiltered);
-
-// // Set up SVG dimensions
-// var margin = { top: 20, right: 20, bottom: 30, left: 40 };
-// var width = 600 - margin.left - margin.right;
-// var height = 400 - margin.top - margin.bottom;
-
-// // Create SVG container
-// var svgtest = d3.select("#chart-2").append("svg")
-//     .attr("width", width + margin.left + margin.right)
-//     .attr("height", height + margin.top + margin.bottom)
-//     .append("g")
-//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-// // Set up scales
-// var xScale = d3.scaleBand()
-//     .domain(incidentlocationwisefiltered.map(d => d.TIMENODEVAL))
-//     .range([0, width])
-//     .padding(0.1);
-
-// var yScale = d3.scaleLinear()
-//     .domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])])
-//     .range([height, 0]);
-
-// // Set up color scale
-// var color = d3.scaleOrdinal()
-//     .domain(keys)
-//     .range(['#1f77b4', '#ff7f0e']); // You can customize the colors as needed
-
-// // Create and append the bars
-// svgchart3.selectAll(".bar")
-//     .data(stackedData)
-//     .enter().append("g")
-//     .attr("fill", d => color(d.key))
-//     .selectAll("rect")
-//     .data(d => d)
-//     .enter().append("rect")
-//     .attr("x", d => d.data.radialx)
-//     .attr("y", d => d.data.radialy + yScale(d[1]) - chart3height / 2)
-//     //.attr("transform", d => `rotate(45, 495.6, 367)`)
-//     .attr("height", d => yScale(d[0]) - yScale(d[1]))
-//     .attr("width", 2)
-//     .append("title")
-//     .text(d => "Node:" + d.data.TIMENODEVAL + "\n" + "X: " + d.data.radialx.toString() + "\n" + "Y: " + d.data.radialy.toString());
-
+    
 renderRadial();
 
 }
@@ -420,6 +368,8 @@ function handleRegionClick(){
         selectedregionarray.push(currregionname);
         currregion.style("opacity", "1.0");
     }
+
+    updateWordCloud();
     
 }
 
