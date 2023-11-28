@@ -107,7 +107,7 @@ heatSVG.append('text')
 const dropdownContainer = heatSVG.append("foreignObject")
     .attr("x", width*0.8)
     .attr("y", height*0.02)
-    .attr("width", width*0.3)
+    .attr("width", width*0.2)
     .attr("height", height*0.08) // Adjusted height to accommodate label and dropdown
     .append("xhtml:div")
     .attr("class", "dropdown-container");
@@ -481,7 +481,7 @@ legend2.append("text")
             const e = d3.event;
             tooltip
             .html(`<strong>Location: ${d.location}<br>Interval: ${d.interval}<br>Incident Count: ${d.eventCount}`)
-            .style("color", "#6ae123")
+            .style("color", "black")
             .style('left', (e.pageX + 10) + 'px')
             .style('top', (e.pageY + 10) + 'px');
         }
