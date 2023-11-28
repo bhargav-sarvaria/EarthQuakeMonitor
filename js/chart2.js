@@ -429,9 +429,10 @@ legend2.append("text")
     heatSVG.append('text')
         .attr('class', 'x-axis-label')
         .attr('text-anchor', 'middle')
-        .attr('x',width/2)
+        .attr('x',width*0.9)
         .attr('y', height+50) // Adjust position as needed
-        // .style("font-size","0px")
+        // .style("font-size","px")
+        .style("font-size","17px")
         .text('Time');
     // Append Y axis label
     heatSVG.append('text')
@@ -440,7 +441,7 @@ legend2.append("text")
         .attr('transform', 'rotate(-90)')
         .attr('x', -height / 2)
         .attr('y',  30) // Adjust position as needed
-        .style("font-size","10px")
+        .style("font-size","17px")
         .text(`Location`);
     
 
