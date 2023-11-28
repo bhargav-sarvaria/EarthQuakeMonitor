@@ -10,21 +10,22 @@ var chart3width;
 var chart3height;
 var arccounter = 0;
 var radiusScale;
+var arccolorcounter = 0;
 const MAP_COLOR_SCHEME = ["#4e79a7", "#f28e2c", "#e15759", "#59a14f", "#76b7b2", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"]
 var incidentlocationwise= [];
 var timearray = [new Date('04/06/2020'), new Date('04/06/2020 06:00:00 AM'), new Date('04/06/2020 06:00:00 PM'), new Date('04/07/2020 06:00:00 AM'), new Date('04/07/2020 06:00:00 PM'), new Date('04/08/2020 06:00:00 AM'), new Date('04/08/2020 06:00:00 PM'), new Date('04/09/2020 06:00:00 AM'), new Date('04/09/2020 06:00:00 PM'), new Date('04/10/2020 06:00:00 AM'), new Date('04/10/2020 12:00:00 PM')];
 const radialstackcolorscheme = d3.scaleOrdinal(d3.schemeCategory10);
-var typesofincidents = ["FIRE","RADIATION"];
+var typesofincidents = ["FIRE","RADIATION", "FLOODING"];
 var incidentlocationwisefiltered = [
 
 
-{TIMENODEVAL: 'Night 5', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},
-{TIMENODEVAL: 'Day 5', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},{TIMENODEVAL: 'Night 1', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},
-{TIMENODEVAL: 'Day 1', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},
-{TIMENODEVAL: 'Night 2', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},{TIMENODEVAL: 'Day 2', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},
-{TIMENODEVAL: 'Night 3', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},
-{TIMENODEVAL: 'Day 3', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},
-{TIMENODEVAL: 'Night 4', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0},{TIMENODEVAL: 'Day 4', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0}];
+{TIMENODEVAL: 'Night 5', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},
+{TIMENODEVAL: 'Day 5', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},{TIMENODEVAL: 'Night 1', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},
+{TIMENODEVAL: 'Day 1', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},
+{TIMENODEVAL: 'Night 2', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},{TIMENODEVAL: 'Day 2', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},
+{TIMENODEVAL: 'Night 3', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},
+{TIMENODEVAL: 'Day 3', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},
+{TIMENODEVAL: 'Night 4', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0},{TIMENODEVAL: 'Day 4', FIREVAL: 0, RADIATIONVAL: 0, radialx: 0, radialy: 0, TOTALVAL: 0, radialrotation: 0, FLOODVAL: 0}];
 const timenodemarginTop = 20;
 const timenodemarginRight = 50;
 const timenodemarginBottom = 40;
@@ -350,7 +351,8 @@ function constructRadialLabels(){
     // Define legend data
 const elementLegendData = [
     { elementLabel: "Fire", elementColor: "purple" },
-    { elementLabel: "Radiation", elementColor: "orange" }
+    { elementLabel: "Radiation", elementColor: "lightpink" },
+    { elementLabel: "Flood", elementColor: "lightblue" }
   ];
   
   // Add legend group
@@ -444,12 +446,12 @@ var angleScale = d3.scaleBand()
   .range([0, 2 * Math.PI]);
 
  radiusScale = d3.scaleLinear()
-  .domain([0, d3.max(incidentlocationwisefiltered, function(d) { return d.FIREVAL + d.RADIATIONVAL; })])
+  .domain([0, d3.max(incidentlocationwisefiltered, function(d) { return d.FIREVAL + d.RADIATIONVAL + d.FLOODVAL; })])
   .range([innerRadius, outerRadius]);
 
 // Stack the data
 var radstackedData = d3.stack()
-  .keys(['RADIATIONVAL','FIREVAL'])(incidentlocationwisefiltered);
+  .keys(['RADIATIONVAL','FIREVAL','FLOODVAL'])(incidentlocationwisefiltered);
 
 // Create arcs
 var arc = d3.arc()
@@ -479,13 +481,33 @@ svg.selectAll('g.radial-chart')
       return "";
     }
   })
-  .attr('fill', function(d, i) { return d[0] === 0 ? 'orange' : 'purple'; })
+  .attr('fill', function(d, i) { return arccolorsetter(); })
   .attr('transform', `translate(${chart3width / 2}, ${chart3height / 2})`)
   .append("title")
   .text(d => "Time Segment: " + d.data.TIMENODEVAL + "\n" + "Incident Type: " + arccounterIncidentType() + "\n" + "Incident Count: " + findIncidentCount(d.data));
 
 
   arccounter = 0;
+  arccolorcounter = 0;
+}
+
+function arccolorsetter(){
+    if(arccolorcounter < 10){
+        arccolorcounter++;
+        return "lightpink";
+    }
+    else if(arccolorcounter >= 10 && arccolorcounter < 20){
+        arccolorcounter++;
+        return "purple";
+    }
+    else if(arccolorcounter >= 20 && arccolorcounter <30){
+        arccolorcounter++;
+        return "lightblue";
+    }
+    else {
+        arccolorcounter++;
+        return "lightpink";
+    }
 }
 
 function arccounterIncidentType(){
@@ -496,6 +518,11 @@ function arccounterIncidentType(){
     else if(arccounter >= 10 && arccounter < 20){
         
         return "FIRE";
+
+    }
+    else if(arccounter >= 20 && arccounter < 30){
+        
+        return "FLOOD";
 
     }
     else{
@@ -510,6 +537,10 @@ function findIncidentCount(incdata){
     }
     else if(arccounter >= 10 && arccounter < 20){
         inccountstring = (incdata.FIREVAL - 1).toString();
+
+    }
+    else if(arccounter >= 20 && arccounter < 30){
+        inccountstring = (incdata.FLOODVAL - 1).toString();
 
     }
     else{
@@ -592,6 +623,7 @@ function createIncidentData(){
     for(const inctimenode of incidentlocationwisefiltered){
         inctimenode.FIREVAL = 1;
         inctimenode.RADIATIONVAL = 1;
+        inctimenode.FLOODVAL = 1;
     }
 
     for(const message of cleanedhimarkdata){
@@ -612,6 +644,12 @@ function createIncidentData(){
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
                         } 
                     }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Night 1');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
+                        } 
+                    }
                 }
             }
         }
@@ -628,6 +666,12 @@ function createIncidentData(){
                         const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 1');
                         if (timenodeindex !== -1) {
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
+                        } 
+                    }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 1');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
                         } 
                     }
                 }
@@ -648,6 +692,12 @@ function createIncidentData(){
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
                         } 
                     }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Night 2');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
+                        } 
+                    }
                 }
             }
         }
@@ -664,6 +714,12 @@ function createIncidentData(){
                         const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 2');
                         if (timenodeindex !== -1) {
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
+                        } 
+                    }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 2');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
                         } 
                     }
                 }
@@ -684,6 +740,12 @@ function createIncidentData(){
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
                         } 
                     }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Night 3');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
+                        } 
+                    }
                 }
             }
         }
@@ -700,6 +762,12 @@ function createIncidentData(){
                         const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 3');
                         if (timenodeindex !== -1) {
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
+                        } 
+                    }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 3');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
                         } 
                     }
                 }
@@ -720,6 +788,12 @@ function createIncidentData(){
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
                         } 
                     }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Night 4');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
+                        } 
+                    }
                 }
             }
         }
@@ -736,6 +810,12 @@ function createIncidentData(){
                         const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 4');
                         if (timenodeindex !== -1) {
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
+                        } 
+                    }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 4');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
                         } 
                     }
                 }
@@ -756,6 +836,12 @@ function createIncidentData(){
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
                         } 
                     }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Night 5');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
+                        } 
+                    }
                 }
             }
         }
@@ -772,6 +858,12 @@ function createIncidentData(){
                         const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 5');
                         if (timenodeindex !== -1) {
                         incidentlocationwisefiltered[timenodeindex].RADIATIONVAL += 1;
+                        } 
+                    }
+                    else if(event == "FLOOD"){
+                        const timenodeindex = incidentlocationwisefiltered.findIndex(item => item.TIMENODEVAL === 'Day 5');
+                        if (timenodeindex !== -1) {
+                        incidentlocationwisefiltered[timenodeindex].FLOODVAL += 1;
                         } 
                     }
                 }
@@ -799,7 +891,7 @@ function updateRadialBars(){
 //   .range([innerRadius, outerRadius]);
     // Stack the data
     var radstackedData = d3.stack()
-    .keys(['RADIATIONVAL','FIREVAL'])(incidentlocationwisefiltered);
+    .keys(['RADIATIONVAL','FIREVAL','FLOODVAL'])(incidentlocationwisefiltered);
 
     // Create arcs
     var arc = d3.arc()
@@ -829,9 +921,10 @@ function updateRadialBars(){
             return "";
         }
     })
-    .attr('fill', function(d, i) { return d[0] === 0 ? 'orange' : 'purple'; })
+    .attr('fill', function(d, i) { return arccolorsetter(); })
     .select("title")
     .text(d => "Time Segment: " + d.data.TIMENODEVAL + "\n" + "Incident Type: " + arccounterIncidentType() + "\n" + "Incident Count: " + findIncidentCount(d.data));
 
     arccounter = 0;
+    arccolorcounter = 0;
 }

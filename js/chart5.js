@@ -174,7 +174,7 @@ const createLineChart = (locations, measure) => {
                     idx = bisect(d.values, xDate);
 
                     d3.select(this).select('text')
-                        .text(y.invert(y(d.values[idx].count_of_tweets)).toFixed(2));
+                        .text(d.name + ": " + y.invert(y(d.values[idx].count_of_tweets)).toFixed(2));
 
                     d3.select(".mouse-line")
                         .attr("d", function () {
