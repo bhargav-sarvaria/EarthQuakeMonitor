@@ -7,22 +7,22 @@ const countEventsByLocation = (data, slider) => {
     const dateExtent = slider.value;
     const mapSvg = document.getElementById('mapsvg');
     const selectedRegions = mapSvg?.value;
-    for(const message of data){
+    for (const message of data) {
         // Filter based on user input
-        if(!(dateExtent[0] <= message.time && message.time <= dateExtent[1])
-            || (selectedRegions?.length > 0 && !selectedRegions.includes(message.location))){
+        if (!(dateExtent[0] <= message.time && message.time <= dateExtent[1])
+            || (selectedRegions?.length > 0 && !selectedRegions.includes(message.location))) {
             continue;
         }
         const locationEventCounts = eventCountsByLocation[message.location] ??= {};
-        for(const event of message.events){
+        for (const event of message.events) {
             locationEventCounts[event] = (locationEventCounts[event] ?? 0) + 1;
         }
     }
 
     const inverse = {};
-    for(const [location, eventCounts] of Object.entries(eventCountsByLocation)) {
+    for (const [location, eventCounts] of Object.entries(eventCountsByLocation)) {
         let total = 0;
-        for(const [event, eventCount] of Object.entries(eventCounts)){
+        for (const [event, eventCount] of Object.entries(eventCounts)) {
             total += eventCount;
             inverse[event] ??= {};
             inverse[event][location] = eventCount
@@ -51,19 +51,19 @@ const getStackedBarData = data => {
     const eventCountsByLocation = countEventsByLocation(data, slider);
     // x-axis data
     const entries = Object.entries(eventCountsByLocation);
- 
+
     const events = d3.stack()
         .keys(eventCountsByLocation.events)
-        .value(function([location, eventCounts], event){ 
-            return eventCounts[event] ?? 0;  
-        } ) 
+        .value(function ([location, eventCounts], event) {
+            return eventCounts[event] ?? 0;
+        })
         (entries);
-    
+
     const inverse = {};
     let max = 0;
-    for(const event of events){
-        const {key} = event;
-        for(const location of event){
+    for (const event of events) {
+        const { key } = event;
+        for (const location of event) {
             const locationName = location.data[0]
             inverse[locationName] ??= {};
             inverse[locationName][key] = location
@@ -157,7 +157,7 @@ const createStackedBarChart = (data) => {
             .domain(stackedBarData.y.domain)
             .range([height - marginBottom, marginTop])
             .padding([0.2]);
-            
+
         const x = d3.scaleLinear()
             .domain(stackedBarData.x.domain)
             .range([marginLeft, width - marginRight])
@@ -193,7 +193,7 @@ const createStackedBarChart = (data) => {
                     .on('mouseover', function (d) {
                         const e = d3.event;
                         d3.select(window.tooltip)
-                            .style('visibility', 'visible');
+                            .style('display', 'block');
                         window['tooltip-name'].textContent = d[0];
                         window['tooltip-value'].textContent = `${d[1].data[1][d[0]]} messages`;
                         e.target.dispatchEvent(resourceEvent('hover', d[0]));
@@ -207,7 +207,7 @@ const createStackedBarChart = (data) => {
                     .on('mouseout', function (d) {
                         const e = d3.event;
                         d3.select(window.tooltip)
-                            .style('visibility', 'hidden');
+                            .style('display', 'none');
                         e.target.dispatchEvent(resourceEvent('leave', d[0]));
                     });
                 return rect;
@@ -229,17 +229,17 @@ window.addEventListener('DOMContentLoaded', async () => {
     const messages = await d3.csv('../cleaned_json.csv');
     const filtered = [];
     const invalidLocations = ['UNKNOWN', '<Location with-held due to contract>']
-    for(const message of messages){
-        if(invalidLocations.includes(message.location)){
+    for (const message of messages) {
+        if (invalidLocations.includes(message.location)) {
             continue;
         }
         try {
             message.events = JSON.parse(message.events);
-        } catch(error){
+        } catch (error) {
             continue;
         }
         message.events = message.events.filter(event => RESOURCES.includes(event));
-        if(message.events.length <= 0){
+        if (message.events.length <= 0) {
             continue;
         }
         message.time = new Date(message.time);
@@ -249,4 +249,4 @@ window.addEventListener('DOMContentLoaded', async () => {
     const updateChart = createStackedBarChart(filtered);
     slider.addEventListener('change', updateChart);
     window.addEventListener('region-click', updateChart);
-}, {once: true});
+}, { once: true });
