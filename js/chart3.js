@@ -355,6 +355,7 @@ svgchart3.selectAll("text.label")
     
     constructDayNightLabels();
     constructRadialLabels();
+    constructMapColorLegend();
 renderRadial();
 
 }
@@ -436,6 +437,51 @@ const legendData = [
   
   // Add text labels
   legendItems.append("text")
+    .attr("x", 15) // Adjust the distance between circle and text
+    .attr("y", 4) // Adjust the vertical alignment
+    .text(d => d.label);
+}
+
+function constructMapColorLegend(){
+    // Define legend data
+const colorlegendData = [
+    { label: "Water", color: "#4e79a7" },
+    { label: "Transport", color: "#f28e2c" },
+    { label: "Gas", color: "#e15759" },
+    { label: "Garbage", color: "#59a14f" },
+    { label: "Power", color: "#76b7b2" },
+    { label: "Police", color: "#edc949" },
+    { label: "Medical", color: "#af7aa1" }
+  ];
+  
+  // Add legend group
+  const colorlegend = svgchart3.append("g")
+    .attr("class", "legend")
+    .attr("transform", "translate("+ chart3width * 0.05 +  "," + chart3height * 0.2 + ")"); // Adjust the translate values as needed
+  
+  // Add legend title
+  colorlegend.append("text")
+    .attr("x", -10)
+    .attr("y", -30)
+    .text("Map Region Color")
+    .attr("font-weight", "bold");
+  
+  // Add legend items
+  const colorlegendItems = colorlegend.selectAll(".legend-item")
+    .data(colorlegendData)
+    .enter().append("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+  
+  // Add colored circles
+  colorlegendItems.append("circle")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", 8) // Adjust the radius as needed
+    .style("fill", d => d.color);
+  
+  // Add text labels
+  colorlegendItems.append("text")
     .attr("x", 15) // Adjust the distance between circle and text
     .attr("y", 4) // Adjust the vertical alignment
     .text(d => d.label);
