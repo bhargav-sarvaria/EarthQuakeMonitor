@@ -184,6 +184,18 @@ var centerCoordinates = [
            .attr('transform', `translate(${chart3width / 2}, ${chart3height / 2})`);
     }
     // renderRadial();
+
+
+    
+// Append X axis label
+svgchart3.append('text')
+.attr('class', 'title')
+.attr('text-anchor', 'middle')
+.attr('x',chart3width*0.15)
+.attr('y', chart3height*0.05) // Adjust position as needed
+// .style("font-size","px")
+.style("font-size","15px")
+.text('Geographic Resource Prioritization Chart');   
     
     // Create a projection
     var projection = d3.geoMercator()
@@ -440,6 +452,8 @@ var svgHeight = 500;
 
 // Create an SVG container in the body of the document
 var svg = d3.select('#chart-3').select('svg');
+ 
+
 // Create scales
 var angleScale = d3.scaleBand()
   .domain(incidentlocationwisefiltered.map(function(d) { return d.TIMENODEVAL; }))

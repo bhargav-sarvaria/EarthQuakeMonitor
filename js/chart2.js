@@ -88,6 +88,16 @@ heatSVG = wrapper.append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left-20 + "," + margin.top -20+ ")");
 
+// Append X axis label
+heatSVG.append('text')
+.attr('class', 'title')
+.attr('text-anchor', 'middle')
+.attr('x',width*0.5)
+.attr('y', 20) // Adjust position as needed
+// .style("font-size","px")
+.style("font-size","12px")
+.text('Incident Heatmap');
+
     const slider = document.getElementById('dateSlider');
     slider.addEventListener('input', updateHeatmap());
     
@@ -441,7 +451,7 @@ legend2.append("text")
         .attr('transform', 'rotate(-90)')
         .attr('x', -height / 2)
         .attr('y',  30) // Adjust position as needed
-        .style("font-size","17px")
+        .style("font-size","10px")
         .text(`Location`);
     
 

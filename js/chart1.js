@@ -65,6 +65,7 @@ function createWordCloud(messages) {
         .style('opacity', 0)
         .style('display', 'none');
 
+
     messages = messages.filter(d => {
         if(!wordPattern.test(d.essential_words)){
             return d
@@ -139,82 +140,132 @@ function createWordCloud(messages) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
                 .text(function(d) { return d.text; })
-                .on('mouseover', function (event, d) {
+                .style("cursor", "pointer")
+                // .on('mouseover', function (event, d) {
+                //     const word = event.text;
+                //     const filteredMessages = messages_filtered.filter((message) =>
+                //         message.essential_words.includes(word)
+                //     );
+                //     const initialMessages = filteredMessages.slice(0, 10)
+                //             .filter((message) => message.is_disaster_related === "True" && !message.message.startsWith("re:"))
+                //             .map((message) => message.message)
+                //             .join('<br>');
+                //     let tooltipHtml = '<b>Messages containing "' + word + '":</b><button class="close-tooltip">Close</button><br>';
+                //     tooltipHtml += '<table><thead><tr><th>Location</th><th>User</th><th>Message</th></tr></thead><tbody>';
+                //     filteredMessages.slice(0, 10).forEach(function(message) {
+                //         tooltipHtml += '<tr><td>' + message.location + '</td><td>' + message.account + '</td><td>' + message.message + '</td></tr>';
+                //     });
+
+                //     tooltipHtml += '</tbody></table>';
+                //     if (filteredMessages.length > 5) {
+                //         tooltipHtml += '<br><a href="#" class="expand-tooltip">More...</a>';
+                //     }
+
+                //     tooltip.style('display', 'block')
+                //     .transition()
+                //     .duration(200)
+                //     .style('opacity', 1)
+                //     .style('pointer-events', 'auto');
+                    
+                //     tooltip.html(tooltipHtml)
+                //     .style('left', (d.x) + 'px')
+                //     .style('top', (d.y) + 'px');
+
+                //     const closeBtn = document.getElementsByClassName('close-tooltip')[0];
+                //     if (closeBtn) {
+                //         closeBtn.addEventListener('click', function() {
+                //             console.log('button');
+                //             tooltip.transition()
+                //                     .duration(500)
+                //                     .style('opacity', 0);
+                //         });
+                //     }
+                //     const moreLink = document.getElementsByClassName('expand-tooltip')[0];
+                //     if (moreLink) {
+                //         moreLink.onclick = function(e) {
+                //             e.preventDefault();
+                //             let expandedTooltipHtml = '<b>Messages containing "' + word + '":</b><button class="close-tooltip">Close</button><br>';
+                //             expandedTooltipHtml += '<table><thead><tr><th>Location</th><th>User</th><th>Message</th></tr></thead><tbody>';
+                //             filteredMessages.forEach(function(message) {
+                //                 expandedTooltipHtml += '<tr><td>' + message.location + '</td><td>' + message.account + '</td><td>' + message.message + '</td></tr>';
+                //             });
+
+                //             expandedTooltipHtml += '</tbody></table>';
+                //             tooltip.html(expandedTooltipHtml)
+                //                 .style('opacity', 1)
+                //                 .style('left', (d.x) + 'px')
+                //                 .style('top', (d.y) + 'px');
+
+                //             const newCloseBtn = document.getElementsByClassName('close-tooltip')[0];
+                //             if (newCloseBtn) {
+                //                 newCloseBtn.addEventListener('click', function() {
+                //                     tooltip.transition()
+                //                         .duration(500)
+                //                         .style('opacity', 0);
+                //                 });
+                //             }
+                //         };
+                //     }
+                // })
+                // .on('mouseout', function() {
+                //     const tooltip = d3.select('.chart1Tooltip');
+                    
+                //     tooltip.transition().duration(5000).style('opacity', 0).style('pointer-events', 'none');
+                // })
+                .on('click', function (event, d) {
                     const word = event.text;
                     const filteredMessages = messages_filtered.filter((message) =>
                         message.essential_words.includes(word)
                     );
                     const initialMessages = filteredMessages.slice(0, 10)
-                            .filter((message) => message.is_disaster_related === "True" && !message.message.startsWith("re:"))
-                            .map((message) => message.message)
-                            .join('<br>');
-                    let tooltipHtml = '<b>Messages containing "' + word + '":</b><button class="close-tooltip">Close</button><br>';
+                        .filter((message) => message.is_disaster_related === "True" && !message.message.startsWith("re:"))
+                        .map((message) => message.message)
+                        .join('<br>');
+                    
+                    // const tooltipHtml = '<b>Messages containing "' + word + '":</b><br>' +
+                    //     '<div>' + initialMessages + '</div>';
+
+
+                    let tooltipHtml = '<b>Top Messages containing "' + word + '":</b><button class="close-tooltip">Close</button><br>';
                     tooltipHtml += '<table><thead><tr><th>Location</th><th>User</th><th>Message</th></tr></thead><tbody>';
                     filteredMessages.slice(0, 10).forEach(function(message) {
                         tooltipHtml += '<tr><td>' + message.location + '</td><td>' + message.account + '</td><td>' + message.message + '</td></tr>';
                     });
 
                     tooltipHtml += '</tbody></table>';
-                    if (filteredMessages.length > 5) {
-                        tooltipHtml += '<br><a href="#" class="expand-tooltip">More...</a>';
-                    }
-
-                    tooltip.style('display', 'block')
-                    .transition()
-                    .duration(200)
-                    .style('opacity', 1)
-                    .style('pointer-events', 'auto');
+            
                     
-                    tooltip.html(tooltipHtml)
-                    .style('left', (d3.event.pageX + 10) + 'px')
-                    .style('top', (d3.event.pageY -1800) + 'px');
 
-                    const closeBtn = document.getElementsByClassName('close-tooltip')[0];
+                    const wordDataContainer = document.getElementById('wordDataContainer');
+                    wordDataContainer.innerHTML = tooltipHtml;
+                    wordDataContainer.style.display = 'block';
+                    const closeBtn = wordDataContainer.querySelector('.close-tooltip');
                     if (closeBtn) {
                         closeBtn.addEventListener('click', function() {
-                            console.log('button');
-                            tooltip.transition()
-                                    .duration(500)
-                                    .style('opacity', 0);
+                            // Clear the content and hide the tooltip
+                            wordDataContainer.innerHTML = '';
+                            wordDataContainer.style.display = 'none';
                         });
                     }
-                    const moreLink = document.getElementsByClassName('expand-tooltip')[0];
-                    if (moreLink) {
-                        moreLink.onclick = function(e) {
-                            e.preventDefault();
-                            let expandedTooltipHtml = '<b>Messages containing "' + word + '":</b><button class="close-tooltip">Close</button><br>';
-                            expandedTooltipHtml += '<table><thead><tr><th>Location</th><th>User</th><th>Message</th></tr></thead><tbody>';
-                            filteredMessages.forEach(function(message) {
-                                expandedTooltipHtml += '<tr><td>' + message.location + '</td><td>' + message.account + '</td><td>' + message.message + '</td></tr>';
-                            });
+                    // Scroll to the created div
+        scrollToWordDataContainer();
 
-                            expandedTooltipHtml += '</tbody></table>';
-                            tooltip.html(expandedTooltipHtml)
-                                .style('opacity', 1)
-                                .style('left', (d3.event.pageX + 50) + 'px')
-                                .style('top', (d3.event.pageY -1500) + 'px');
-
-                            const newCloseBtn = document.getElementsByClassName('close-tooltip')[0];
-                            if (newCloseBtn) {
-                                newCloseBtn.addEventListener('click', function() {
-                                    tooltip.transition()
-                                        .duration(500)
-                                        .style('opacity', 0);
-                                });
-                            }
-                        };
-                    }
                 })
-                .on('mouseout', function() {
-                    const tooltip = d3.select('.chart1Tooltip');
-                    tooltip.transition().duration(5000).style('opacity', 0).style('pointer-events', 'none');
-                })
+                
                 
         }
     }
     updateWordCloud();
     return updateWordCloud;
 }
+
+function scrollToWordDataContainer() {
+    const wordDataContainer = document.getElementById('wordDataContainer');
+    if (wordDataContainer) {
+        wordDataContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
 
 window.addEventListener('DOMContentLoaded', async () => {
     d3.csv('words_essential_2.csv').then(data => {

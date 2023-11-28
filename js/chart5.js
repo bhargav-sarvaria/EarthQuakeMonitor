@@ -49,6 +49,17 @@ const createLineChart = (locations, measure) => {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    // Append X axis label
+    svg.append('text')
+    .attr('class', 'title')
+    .attr('text-anchor', 'middle')
+    .attr('x',width*0.85)
+    .attr('y', height*0.005) // Adjust position as needed
+    // .style("font-size","px")
+    .style("font-size","12px")
+    .text('Fatality/Mssg Line Chart');    
+
     color.domain(d3.keys(data[0]).filter(function (key) {
         return key !== "time_rounded" && locations.indexOf(key) > -1;
     }));

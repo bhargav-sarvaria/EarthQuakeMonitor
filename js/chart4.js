@@ -121,6 +121,17 @@ const createStackedBarChart = (data) => {
     feMerge.append("feMergeNode")
         .attr("in", "SourceGraphic");
 
+        const { width, height } = wrapper.node().getBoundingClientRect();
+     // Append X axis label
+    svg.append('text')
+     .attr('class', 'title')
+     .attr('text-anchor', 'middle')
+     .attr('x',width*0.85)
+     .attr('y', height*0.055) // Adjust position as needed
+     // .style("font-size","px")
+     .style("font-size","12px")
+     .text('Resource Stack Bar Chart');  
+
     const xAxis = svg.append("g");
     const xAxisLabel = svg.append("text");
 
@@ -170,7 +181,7 @@ const createStackedBarChart = (data) => {
         xAxisLabel
             .attr("x", "50%")
             .attr("y", height - marginBottom + 35)
-            .text("Messages")
+            .text("Resource Count")
 
         // Add the y-axis.
         yAxis
