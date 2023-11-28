@@ -204,7 +204,7 @@ function createWordCloud(messages) {
                 })
                 .on('mouseout', function() {
                     const tooltip = d3.select('.chart1Tooltip');
-                    tooltip.transition().duration(5000).style('opacity', 0);
+                    tooltip.transition().duration(5000).style('opacity', 0).style('pointer-events', 'none');
                 })
                 
         }
