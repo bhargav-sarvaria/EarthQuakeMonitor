@@ -127,13 +127,13 @@ dropdown.selectAll("option")
     .style("font-size","10px");
 
     // Handle change event
-dropdown.on("change", function(event) {
-    const selectedValue = d3.select(this).node().value;
-    // Add your code to handle the change event
-    selectedIncident = this.value;
-    updateHeatmap();
+    dropdown.on("change", function(event) {
+        const selectedValue = d3.select(this).node().value;
+        // Add your code to handle the change event
+        selectedIncident = this.value;
+        updateHeatmap();
 
-});
+    });
 
 
 
@@ -187,16 +187,16 @@ dropdown.on("change", function(event) {
             locationData[location].eventCount++;
         });
 
-    // Now locationData object contains the desired information
-    console.log(locationData);
+        // Now locationData object contains the desired information
+        console.log(locationData);
 
-    const totalTimeRange = endTime - startTime;
+        const totalTimeRange = endTime - startTime;
 
-    // Specify the number of intervals
-    const numberOfIntervals = 10;
+        // Specify the number of intervals
+        const numberOfIntervals = 10;
 
-    // Calculate the width of each interval in milliseconds
-    const intervalWidth = totalTimeRange / numberOfIntervals;
+        // Calculate the width of each interval in milliseconds
+        const intervalWidth = totalTimeRange / numberOfIntervals;
 
     
     const intervalData = [];
@@ -206,85 +206,85 @@ dropdown.on("change", function(event) {
     const uniqueLocations = [];
     const uniqueIntervals = Array.from({ length: numberOfIntervals }, (_, i) => i);
 
-const uniqueIntervalsTime = new Array(numberOfIntervals)
+        const uniqueIntervalsTime = new Array(numberOfIntervals)
 
-// Iterate through each location in locationData
-Object.keys(locationData).forEach(location => {
-    const locationInfo = locationData[location];
+        // Iterate through each location in locationData
+        Object.keys(locationData).forEach(location => {
+            const locationInfo = locationData[location];
 
-    // Iterate through each time in the location
-    locationInfo.time.forEach(time => {
-        // Calculate the interval index for the given time
-        const intervalIndex = Math.floor((time - startTime) / intervalWidth);
+            // Iterate through each time in the location
+            locationInfo.time.forEach(time => {
+                // Calculate the interval index for the given time
+                const intervalIndex = Math.floor((time - startTime) / intervalWidth);
 
-        if(uniqueIntervalsTime[intervalIndex] == undefined){
-            console.log(time)
-            uniqueIntervalsTime[intervalIndex] = time;
+                if(uniqueIntervalsTime[intervalIndex] == undefined){
+                    console.log(time)
+                    uniqueIntervalsTime[intervalIndex] = time;
+                }
+
+                // Create a unique key for each combination of location and interval
+                const key = location + '-' + intervalIndex;
+
+                // Ensure that the interval index and location are in the uniqueArrays
+                if (uniqueLocations.indexOf(location) === -1) {
+                    uniqueLocations.push(location);
+                }
+
+                // Create or update the combination in the uniqueData object
+                if (!uniqueData[key]) {
+                    uniqueData[key] = {
+                        location: location,
+                        interval: intervalIndex,
+                        eventCount: 0,
+                    };
+                }
+
+                // Increment the eventCount for the location and interval
+                uniqueData[key].eventCount += locationInfo.eventCount;
+            });
+        });
+
+
+        console.log(uniqueIntervalsTime)
+
+        uniqueLocations.forEach(location => {
+            uniqueIntervals.forEach(intervalIndex => {
+                const key = location + '-' + intervalIndex;
+
+                // Check if the combination already exists in uniqueData
+                if (!uniqueData[key]) {
+                    // If not, add a default entry with eventCount set to 0
+                    uniqueData[key] = {
+                        location: location,
+                        interval: intervalIndex,
+                        eventCount: 0,
+                    };
+                }
+            });
+        });
+
+        console.log(uniqueData)
+
+        const heatmapData = Object.values(uniqueData);
+        heatSVG.selectAll(".old-x-axis").remove();
+
+
+        // Calculate interval start times
+        const intervalStartTimes = Array.from({ length: numberOfIntervals }, (_, i) => new Date(startTime + i * intervalWidth));
+
+        // Format time for display
+        function formatTime(date) {
+        // Example: format as 'HH:mm:ss'. You can adjust the format as needed
+        return  d3.timeFormat("%B %d %I:%M %p")(date);
         }
 
-        // Create a unique key for each combination of location and interval
-        const key = location + '-' + intervalIndex;
-
-        // Ensure that the interval index and location are in the uniqueArrays
-        if (uniqueLocations.indexOf(location) === -1) {
-            uniqueLocations.push(location);
-        }
-
-        // Create or update the combination in the uniqueData object
-        if (!uniqueData[key]) {
-            uniqueData[key] = {
-                location: location,
-                interval: intervalIndex,
-                eventCount: 0,
-            };
-        }
-
-        // Increment the eventCount for the location and interval
-        uniqueData[key].eventCount += locationInfo.eventCount;
-    });
-});
-
-
-console.log(uniqueIntervalsTime)
-
-uniqueLocations.forEach(location => {
-    uniqueIntervals.forEach(intervalIndex => {
-        const key = location + '-' + intervalIndex;
-
-        // Check if the combination already exists in uniqueData
-        if (!uniqueData[key]) {
-            // If not, add a default entry with eventCount set to 0
-            uniqueData[key] = {
-                location: location,
-                interval: intervalIndex,
-                eventCount: 0,
-            };
-        }
-    });
-});
-
-console.log(uniqueData)
-
-const heatmapData = Object.values(uniqueData);
-heatSVG.selectAll(".old-x-axis").remove();
-
-
-// Calculate interval start times
-const intervalStartTimes = Array.from({ length: numberOfIntervals }, (_, i) => new Date(startTime + i * intervalWidth));
-
-// Format time for display
-function formatTime(date) {
-  // Example: format as 'HH:mm:ss'. You can adjust the format as needed
-  return  d3.timeFormat("%B %d %I:%M %p")(date);
-}
 
 
 
-
-var x = d3.scaleBand()
-    .range([0, width / 1.5])
-    .domain(uniqueIntervals)
-    .padding(0.01);
+        var x = d3.scaleBand()
+            .range([0, width / 1.5])
+            .domain(uniqueIntervals)
+            .padding(0.01);
 
 
 
@@ -309,10 +309,10 @@ heatSVG.append("g")
     
 
 
-    
+            
 
-// Build Y scales and axis:
-heatSVG.selectAll(".old-y-axis").remove();
+        // Build Y scales and axis:
+        heatSVG.selectAll(".old-y-axis").remove();
 
 // Build Y scales and axis:
 var y = d3.scaleBand()
@@ -329,16 +329,16 @@ heatSVG.append("g")
     .attr("dy", ".15em")
     // .style("font-size","15px");
 
-const maxEventCount = d3.max(heatmapData, d => d.eventCount);
-const minEventCount = 1;
+        const maxEventCount = d3.max(heatmapData, d => d.eventCount);
+        const minEventCount = 1;
 
-colors = ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58'];
+        colors = ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58'];
 
-var myColor = d3.scaleQuantile()
-.domain([0, maxEventCount/2, maxEventCount])
-.range(colors);
+        var myColor = d3.scaleQuantile()
+        .domain([0, maxEventCount/2, maxEventCount])
+        .range(colors);
 
-heatSVG.selectAll(".legend").remove();
+        heatSVG.selectAll(".legend").remove();
 
 // Define the dimensions of the legend bar
 const legendHeight = height*0.8; // Height of the vertical legend
@@ -349,28 +349,28 @@ const legend2 = heatSVG.append("g")
   .attr("class", "legend")
   .attr("transform", `translate(${width-20},` + (height*0.2) + ")"); // Adjust for legend height and position
 
-// Create a vertical gradient for the legend
-const linearGradient = legend2.append("defs")
-  .append("linearGradient")
-  .attr("id", "vertical-linear-gradient")
-  .attr("x1", "0%")   // Gradient goes from the top to the bottom
-  .attr("y1", "0%")
-  .attr("x2", "0%")
-  .attr("y2", "100%");
+        // Create a vertical gradient for the legend
+        const linearGradient = legend2.append("defs")
+        .append("linearGradient")
+        .attr("id", "vertical-linear-gradient")
+        .attr("x1", "0%")   // Gradient goes from the top to the bottom
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "100%");
 
-// Define the gradient stops
-const colorRange = [minEventCount, maxEventCount];
-linearGradient.selectAll("stop")
-  .data(colorRange.map((t, i, n) => ({ offset: `${100*i/(n.length-1)}%`, color: myColor(t) })))
-  .enter().append("stop")
-  .attr("offset", d => d.offset)
-  .attr("stop-color", d => d.color);
+        // Define the gradient stops
+        const colorRange = [minEventCount, maxEventCount];
+        linearGradient.selectAll("stop")
+        .data(colorRange.map((t, i, n) => ({ offset: `${100*i/(n.length-1)}%`, color: myColor(t) })))
+        .enter().append("stop")
+        .attr("offset", d => d.offset)
+        .attr("stop-color", d => d.color);
 
-// Draw the rectangle and fill with the vertical gradient
-legend2.append("rect")
-  .attr("width", legendWidth)
-  .attr("height", legendHeight)
-  .style("fill", "url(#vertical-linear-gradient)");
+        // Draw the rectangle and fill with the vertical gradient
+        legend2.append("rect")
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
+        .style("fill", "url(#vertical-linear-gradient)");
 
 // Add min and max value labels next to the legend
 legend2.selectAll(".legend-value-text")
@@ -391,28 +391,27 @@ legend2.append("text")
   .style("font-weight", "bold") // Optionally, make the text bold
   .text("← More Incidents"); // Replace with your desired text
 
-// Create tooltip div
-var tooltip = d3.select("#chart-2")
-.append("div")
-.style("opacity", 0)
-.attr("class", "tooltip")
-.style("background-color", "white")
-.style("border", "solid")
-.style("border-width", "2px")
-.style("border-radius", "5px")
-.style("padding", "5px")
+        // Create tooltip div (no parent elements can use postition: relative or hover will not work)
+        var tooltip = d3.select("#chart-2-tooltip")
+        .style("opacity", 1)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
 
-let rt = heatSVG.selectAll(".heatmap-rect:not(.highlighted-row)");
-console.log(rt);
+        let rt = heatSVG.selectAll(".heatmap-rect:not(.highlighted-row)");
+        console.log(rt);
 
-// Draw rectangles for the heatmap
-heatSVG.selectAll(".heatmap-rect").remove();
-heatSVG.selectAll(".heatmap-rect")
-    .data(heatmapData)
-    .enter()
-    .append("rect")
-    // .attr("class", "heatmap-rect")
-    .attr("class", function(d) { return "heatmap-rect location-" + d.location.replace(/\s+/g, '-'); }) // Add unique class based on location
+        // Draw rectangles for the heatmap
+        heatSVG.selectAll(".heatmap-rect").remove();
+        heatSVG.selectAll(".heatmap-rect")
+            .data(heatmapData)
+            .enter()
+            .append("rect")
+            // .attr("class", "heatmap-rect")
+            .attr("class", function(d) { return "heatmap-rect location-" + d.location.replace(/\s+/g, '-'); }) // Add unique class based on location
 
     .attr("x", function (d) { return x(d.interval)+120; })
     .attr("y", function (d) { return y(d.location)+30; })
@@ -445,48 +444,45 @@ heatSVG.selectAll(".heatmap-rect")
         .text(`Location`);
     
 
-    if(isHighlighted){
-        selectedregionarray.forEach(location => highlightRow(location))
-    }
+            if(isHighlighted){
+                selectedregionarray.forEach(location => highlightRow(location))
+            }
 
-// Rest of your code remains unchanged
+        // Rest of your code remains unchanged
 
-function mouseover(d) {
-    tooltip.style("opacity", 1);
+        function mouseover(d) {
+            tooltip.style("display", "block");
 
-    if(!isHighlighted){
-        d3.select(this)
-      .style("stroke", "black")
-      .style("stroke-width", "5px") // Increase the stroke width
-      .style("opacity", 1)
-      .style("fill", d => d3.rgb(myColor(d.eventCount * 10)).brighter(0.5)); // Slightly brighten the fill color
-    }
-    
-}
-
-
-
-function mousemove(d) {
-    const e = d3.event;
-    tooltip
-        .html(`<strong>Location: ${d.location}<br>Interval: ${d.interval}<br>Incident Count: ${d.eventCount}`)
-        .style("color", "#6ae123")
-        .style("left", (e.pageX+10) + "px")
-        .style("top", (e.pageY+10) + "px");
-}
-
-function mouseleave(d) {
-    tooltip.style("opacity", 0);
-    if(!isHighlighted)
-    d3.select(this)
-    .style("stroke", "none")
-
-}
+            if(!isHighlighted){
+                this.oldFill = d3.select(this).style("fill");
+                d3.select(this)
+            .style("stroke", "black")
+            .style("stroke-width", "5px") // Increase the stroke width
+            .style("opacity", 1)
+            .style("fill", d => d3.rgb(myColor(d.eventCount * 10)).brighter(0.5)); // Slightly brighten the fill color
+            }
+            
         }
 
 
-    
-   
+
+        function mousemove(d) {
+            const e = d3.event;
+            tooltip
+            .html(`<strong>Location: ${d.location}<br>Interval: ${d.interval}<br>Incident Count: ${d.eventCount}`)
+            .style("color", "#6ae123")
+            .style('left', (e.pageX + 10) + 'px')
+            .style('top', (e.pageY + 10) + 'px');
+        }
+
+        function mouseleave(d) {
+            tooltip.style("display", "none");
+            if(!isHighlighted)
+            d3.select(this)
+            .style("stroke", "none")
+            .style("fill", this.oldFill);
+        }
+    } // END updateHeatmap
     return updateHeatmap
 } 
     

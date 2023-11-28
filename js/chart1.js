@@ -62,7 +62,8 @@ function createWordCloud(messages) {
 
     const tooltip = d3.select('#chart-1').append('div')
         .attr('class', 'chart1Tooltip')
-        .style('opacity', 0);
+        .style('opacity', 0)
+        .style('display', 'none');
 
     messages = messages.filter(d => {
         if(!wordPattern.test(d.essential_words)){
@@ -157,14 +158,16 @@ function createWordCloud(messages) {
                     if (filteredMessages.length > 5) {
                         tooltipHtml += '<br><a href="#" class="expand-tooltip">More...</a>';
                     }
-                    tooltip.transition()
+
+                    tooltip.style('display', 'block')
+                    .transition()
                     .duration(200)
                     .style('opacity', 1)
                     .style('pointer-events', 'auto');
                     
                     tooltip.html(tooltipHtml)
-                    .style('left', (d3.event.pageX + 50) + 'px')
-                    .style('top', (d3.event.pageY -1500) + 'px');
+                    .style('left', (d3.event.pageX + 10) + 'px')
+                    .style('top', (d3.event.pageY -1800) + 'px');
 
                     const closeBtn = document.getElementsByClassName('close-tooltip')[0];
                     if (closeBtn) {
@@ -204,7 +207,7 @@ function createWordCloud(messages) {
                 })
                 .on('mouseout', function() {
                     const tooltip = d3.select('.chart1Tooltip');
-                    tooltip.transition().duration(1000).style('opacity', 0);
+                    tooltip.transition().duration(5000).style('opacity', 0).style('pointer-events', 'none');
                 })
                 
         }
