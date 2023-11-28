@@ -154,7 +154,7 @@ function createWordCloud(messages) {
                     });
 
                     tooltipHtml += '</tbody></table>';
-                    if (filteredMessages.length > 10) {
+                    if (filteredMessages.length > 5) {
                         tooltipHtml += '<br><a href="#" class="expand-tooltip">More...</a>';
                     }
                     tooltip.transition()
