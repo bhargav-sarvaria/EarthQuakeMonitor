@@ -1,12 +1,15 @@
 body {
   background: rgb(91, 91, 91);
-  background: radial-gradient(circle, rgba(91, 91, 91, 1) 0%, rgba(38, 38, 38, 1) 100%);
+  background: radial-gradient(
+    circle,
+    rgba(91, 91, 91, 1) 0%,
+    rgba(38, 38, 38, 1) 100%
+  );
   color: white;
-  margin-bottom: 2em;
 }
 
 text {
-  fill: white
+  fill: white;
 }
 
 .title {
@@ -20,7 +23,8 @@ text {
 }
 
 #main-container {
-  min-height: calc(100vh - 100px);
+  min-height: 90vh;
+  padding: 2.5vh 0;
 }
 
 .chart {
@@ -28,16 +32,16 @@ text {
   border-radius: 4px;
   margin-bottom: 20px;
   padding: 5px;
-  height: calc(50% - 5px);
+  height: 45vh;
   /* Adjust height for spacing */
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-/* 
+  /* 
   background-color: rgb(67, 55, 55);
    */
-   background-color: rgb(90, 79, 79);
+  background-color: rgb(90, 79, 79);
   border-radius: 10px;
   box-shadow: 4px 3px 10px 4px rgb(47, 47, 47);
 }
@@ -67,7 +71,7 @@ text {
   max-width: min-content;
 }
 
-#tooltip>* {
+#tooltip > * {
   margin: 0;
 }
 
