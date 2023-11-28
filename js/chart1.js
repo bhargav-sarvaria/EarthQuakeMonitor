@@ -163,8 +163,8 @@ function createWordCloud(messages) {
                     .style('pointer-events', 'auto');
                     
                     tooltip.html(tooltipHtml)
-                    .style('left', (d3.event.pageX + 50) + 'px')
-                    .style('top', (d3.event.pageY -1500) + 'px');
+                    .style('left', (d3.event.pageX + 10) + 'px')
+                    .style('top', (d3.event.pageY -1800) + 'px');
 
                     const closeBtn = document.getElementsByClassName('close-tooltip')[0];
                     if (closeBtn) {
@@ -204,7 +204,7 @@ function createWordCloud(messages) {
                 })
                 .on('mouseout', function() {
                     const tooltip = d3.select('.chart1Tooltip');
-                    tooltip.transition().duration(1000).style('opacity', 0);
+                    tooltip.transition().duration(5000).style('opacity', 0);
                 })
                 
         }
